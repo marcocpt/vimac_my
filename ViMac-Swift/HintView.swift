@@ -76,9 +76,9 @@ class HintView: NSView {
 
 class WindowHintView: NSView {
     let borderColor = NSColor.darkGray
-    let backgroundColor = NSColor(red: 25 / 255, green: 25 / 255, blue: 25 / 255, alpha: 1)
-    let untypedHintColor = NSColor.white
-    let typedHintColor = NSColor.darkGray
+    let backgroundColor = NSColor(red: 255 / 255, green: 224 / 255, blue: 112 / 255, alpha: 1)
+    let untypedHintColor = NSColor.black
+    let typedHintColor = NSColor(red: 212 / 255, green: 172 / 255, blue: 58 / 255, alpha: 1)
 
     let associatedElement: Element
     var hintTextView: HintText?

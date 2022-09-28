@@ -7,6 +7,7 @@
 //
 
 #import "HideCursorGlobally.h"
+#import <CoreGraphics/CGDirectDisplay.h>
 
 @implementation HideCursorGlobally
 

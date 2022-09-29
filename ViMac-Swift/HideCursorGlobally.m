@@ -8,6 +8,7 @@
 
 #import "HideCursorGlobally.h"
 #import <CoreGraphics/CGDirectDisplay.h>
+#import <ApplicationServices/ApplicationServices.h>
 
 @implementation HideCursorGlobally
 
@@ -26,5 +27,12 @@
 
 + (void) unhide {
     CGDisplayShowCursor(CGMainDisplayID());
+}
+
+// this should probably belong in its own file.
++ (void) _activateWindow: (pid_t) pid {
+    ProcessSerialNumber psn;
+    GetProcessForPID(pid, &psn);
+    SetFrontProcessWithOptions(&psn, kSetFrontProcessFrontWindowOnly);
 }
 @end

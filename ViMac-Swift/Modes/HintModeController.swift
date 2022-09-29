@@ -455,7 +455,9 @@ class HintModeController: ModeController {
         let clickPosition: NSPoint = {
             // hints are shown at the bottom-left for AXLinks (see HintsViewController#renderHint),
             // so a click is performed there
-            if element.role == "AXLink" {
+            if element.role == "AXLink",
+               let _: URL = try? UIElement(element.rawElement).attribute(.url)
+            {
                 return NSPoint(
                     // tiny offset in case clicking on the edge of the element does nothing
                     x: element.frame.origin.x + 5,

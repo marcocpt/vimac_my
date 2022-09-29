@@ -262,7 +262,8 @@ class HintModeController: ModeController {
     
     private var ui: HintModeUserInterface?
     private var windowHintsUi: WindowHintsUserInterface?
-    private var input: String?
+    /// Activated keyboard input information
+    private lazy var input = ""
     private var hints: [Hint]?
     private var windowHints: [WindowHint]?
     
@@ -351,26 +352,17 @@ class HintModeController: ModeController {
             ])
             ui.rotateHints()
         case .backspace:
-            guard let ui = ui,
-                  let windowHintsUi = windowHintsUi,
-                  let _ = input else { return }
-            _ = self.input!.popLast()
-            ui.updateInput(input: self.input!)
-            windowHintsUi.updateInput(input: self.input!)
+            _ = input.popLast()
+            ui?.updateInput(input: input)
+            windowHintsUi?.updateInput(input: input)
         case .advance(let by, let action):
-            guard let ui = ui,
-                  let windowHintsUi = windowHintsUi,
-                  let input = input,
-                  let hints = hints,
-                  let windowHints = windowHints else { return }
-            
             let newInput = input + by
-            self.input = newInput
+            input = newInput
             
-            ui.updateInput(input: newInput)
-            windowHintsUi.updateInput(input: newInput)
+            ui?.updateInput(input: newInput)
+            windowHintsUi?.updateInput(input: newInput)
 
-            if let matchingWindowHint = windowHints.first(where: { $0.text.starts(with: newInput.uppercased() )}) {
+            if let matchingWindowHint = windowHints?.first(where: { $0.text.starts(with: newInput.uppercased() )}) {
                 Analytics.shared().track("Hint Mode Action Performed", properties: [
                     "Target Application": app?.bundleIdentifier as Any,
                     "Hint Action": "Window Raised"
@@ -379,6 +371,8 @@ class HintModeController: ModeController {
                 focusWindow(window: matchingWindowHint.window.ax.rawElement, pid: matchingWindowHint.window.cg.pid)
                 return
             }
+
+            guard let hints = hints else { return }
 
             let hintsWithInputAsPrefix = hints.filter { $0.text.starts(with: newInput.uppercased()) }
 

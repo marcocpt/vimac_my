@@ -18,7 +18,7 @@ class Utils: NSObject {
         moveEvent?.post(tap: .cghidEventTap)
     }
     
-    static func leftClickMouse(position: CGPoint) {
+    static func leftClickMouse(position: CGPoint, flags: CGEventFlags = []) {
         let event = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: position, mouseButton: .left)
         let event2 = CGEvent(mouseEventSource: nil, mouseType: .leftMouseUp, mouseCursorPosition: position, mouseButton: .left)
         // for some reason you need to do this for some application to recognize the click
@@ -29,7 +29,7 @@ class Utils: NSObject {
         // e.g. CTRL + left click -> right click,
         // Shift + right click -> Nothing in Finder
         // this matters because modifier keys are used to trigger different click types in Hint Mode.
-        event?.flags = .init()
+        event?.flags.insert(flags)
         event2?.flags = .init()
         event?.post(tap: .cghidEventTap)
         event2?.post(tap: .cghidEventTap)
@@ -45,6 +45,30 @@ class Utils: NSObject {
         event?.post(tap: .cghidEventTap)
         
         event?.setIntegerValueField(.mouseEventClickState, value: 2)
+        
+        event?.type = .leftMouseDown
+        event?.post(tap: .cghidEventTap)
+        event?.type = .leftMouseUp
+        event?.post(tap: .cghidEventTap)
+    }
+    
+    static func tripleLeftClickMouse(position: CGPoint) {
+        let event = CGEvent(mouseEventSource: nil, mouseType: .leftMouseDown, mouseCursorPosition: position, mouseButton: .left)
+        event?.setIntegerValueField(.mouseEventClickState, value: 1)
+        event?.flags = .init()
+        
+        event?.post(tap: .cghidEventTap)
+        event?.type = .leftMouseUp
+        event?.post(tap: .cghidEventTap)
+        
+        event?.setIntegerValueField(.mouseEventClickState, value: 2)
+        
+        event?.type = .leftMouseDown
+        event?.post(tap: .cghidEventTap)
+        event?.type = .leftMouseUp
+        event?.post(tap: .cghidEventTap)
+        
+        event?.setIntegerValueField(.mouseEventClickState, value: 3)
         
         event?.type = .leftMouseDown
         event?.post(tap: .cghidEventTap)

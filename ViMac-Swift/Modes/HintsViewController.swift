@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import AXSwift
 
 class HintsViewController: NSViewController {
     let hints: [Hint]
@@ -14,11 +15,13 @@ class HintsViewController: NSViewController {
     var typed: String
 
     var hintViews: [HintView]!
+    let modifiers: ClickModifiers
     
-    init(hints: [Hint], textSize: CGFloat, typed: String = "") {
+    init(hints: [Hint], textSize: CGFloat, typed: String = "", modifiers: ClickModifiers) {
         self.hints = hints
         self.textSize = textSize
         self.typed = typed
+        self.modifiers = modifiers
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -34,7 +37,7 @@ class HintsViewController: NSViewController {
         super.viewDidAppear()
         
         self.hintViews = hints
-            .map { renderHint($0) }
+            .map { renderHint($0, modifiers: modifiers) }
             .compactMap({ $0 })
 
         for hintView in self.hintViews {
@@ -67,24 +70,30 @@ class HintsViewController: NSViewController {
         self.hintViews = shuffledHintViews
     }
 
-    // are you changing the location where hints are rendered?
-    // make sure to update HintModeController#performHintAction as well
-    func renderHint(_ hint: Hint) -> HintView? {
+    /// are you changing the location where hints are rendered?
+    /// make sure to update HintModeController#performHintAction as well
+    /// 
+    /// - Tag: FIXME_HV1
+    func renderHint(_ hint: Hint, modifiers: ClickModifiers) -> HintView? {
         let view = HintView(associatedElement: hint.element, hintTextSize: CGFloat(textSize), hintText: hint.text, typedHintText: "")
         guard let elementFrame = self.elementFrame(hint.element) else { return nil }
         
         let hintOrigin: NSPoint = {
+            let viewSize = view.intrinsicContentSize
             // position hint on bottom-left of AXLinks (see #373)
-            if hint.element.role == "AXLink" {
-                return elementFrame.origin
+            if !modifiers.linkCenter,
+               hint.element.role == "AXLink",
+               let _: URL = try? UIElement(hint.element.rawElement).attribute(.url)
+            {
+                let y = elementFrame.origin.y - viewSize.height / 2
+                return CGPoint(x: elementFrame.origin.x, y: y < 0 ? 0 : y)
             }
-            
+
             // position hint on center of element
             let elementCenter = GeometryUtils.center(elementFrame)
-            return NSPoint(
-                x: elementCenter.x - (view.intrinsicContentSize.width / 2),
-                y: elementCenter.y - (view.intrinsicContentSize.height / 2)
-            )
+            let x = elementCenter.x - (viewSize.width / 2)
+            let y = elementCenter.y - viewSize.height
+            return NSPoint( x: x < 0 ? 0 : x, y: y < 0 ? 0 : y)
         }()
 
         if hintOrigin.x.isNaN || hintOrigin.y.isNaN {

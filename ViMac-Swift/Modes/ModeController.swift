@@ -17,4 +17,5 @@ protocol ModeController {
 
 protocol ModeControllerDelegate: AnyObject {
     func modeDeactivated(controller: ModeController)
+    func switchAutoMenu()
 }

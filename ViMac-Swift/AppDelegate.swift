@@ -8,6 +8,7 @@
 
 import Cocoa
 import AXSwift
+import os
 import RxSwift
 import MASShortcut
 import Sparkle
@@ -242,6 +243,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
             
             self.modeCoordinator.openedMenu = menu
+            print("set openedMenu \(menu)")
+            if self.modeCoordinator.autoWithMenu {
+                let old = (self.modeCoordinator.modeController as? HintModeController)?.modifiers
+                self.modeCoordinator.deactivate()
+                self.modeCoordinator.setHintMode(mechanism: "Lock", modifiers: old)
+            }
         })
         
         self.frontmostAppService.observeMenuClosed({ [weak self] menu in
@@ -249,6 +256,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             if self.modeCoordinator.openedMenu == menu {
                 self.modeCoordinator.openedMenu = nil
+                self.modeCoordinator.deactivate()
             }
         })
 

@@ -136,6 +136,7 @@
 		6929D13B2A1ABBF7F59E68D2 /* Pods-Vimac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Vimac.debug.xcconfig"; path = "Target Support Files/Pods-Vimac/Pods-Vimac.debug.xcconfig"; sourceTree = "<group>"; };
 		7677AB73AD55CB183067A498 /* Pods-VimacUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacUITests.release.xcconfig"; path = "Target Support Files/Pods-VimacUITests/Pods-VimacUITests.release.xcconfig"; sourceTree = "<group>"; };
 		824743387EB077A984803D5C /* Pods-VimacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacTests.debug.xcconfig"; path = "Target Support Files/Pods-VimacTests/Pods-VimacTests.debug.xcconfig"; sourceTree = "<group>"; };
+		851BCE0628E77F33000E075C /* FIXME.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FIXME.md; sourceTree = "<group>"; };
 		85E207A8CB4C294752F7C738 /* Pods_VimacUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VimacUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6BBF07B6655F54781C7A225 /* Pods_Vimac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Vimac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3D6841E02A20AE804E019B5 /* Pods-VimacTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacTests.release.xcconfig"; path = "Target Support Files/Pods-VimacTests/Pods-VimacTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -269,6 +270,14 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		851BCE0528E77F18000E075C /* Doument */ = {
+			isa = PBXGroup;
+			children = (
+				851BCE0628E77F33000E075C /* FIXME.md */,
+			);
+			path = Doument;
+			sourceTree = "<group>";
+		};
 		A714F2240DB82D97A12A79E9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -366,6 +375,7 @@
 		E26172172322968500E396CA = {
 			isa = PBXGroup;
 			children = (
+				851BCE0528E77F18000E075C /* Doument */,
 				E27776E7240B784900488320 /* LaunchAtLogin.framework.dSYM */,
 				E26172222322968500E396CA /* ViMac-Swift */,
 				E26172352322968700E396CA /* ViMac-SwiftTests */,
@@ -721,7 +731,7 @@
 		};
 		E20696FA23294E25001EFDB2 /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
+			buildActionMask = 8;
 			files = (
 			);
 			inputFileListPaths = (
@@ -734,13 +744,13 @@
 			);
 			outputPaths = (
 			);
-			runOnlyForDeploymentPostprocessing = 0;
+			runOnlyForDeploymentPostprocessing = 1;
 			shellPath = /bin/sh;
 			shellScript = "if [ \"$BUILD_ENV\" != 'CI' ]; then\n    osascript grant-accessibility-permission-dev.scpt;\nfi\n";
 		};
 		E27776E1240B765E00488320 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputFileListPaths = (

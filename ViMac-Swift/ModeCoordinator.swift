@@ -14,7 +14,7 @@ import Segment
 import os
 import UserNotifications
 
-class ModeCoordinator: ModeControllerDelegate {
+class ModeCoordinator {
     let disposeBag = DisposeBag()
     
     var priorKBLayout: InputSource?
@@ -26,6 +26,8 @@ class ModeCoordinator: ModeControllerDelegate {
     private let keySequenceListener: VimacKeySequenceListener
     private var holdKeyListener: HoldKeyListener?
     var openedMenu: AXUIElement?
+    
+    var autoWithMenu = false
     
     var modeController: ModeController?
     
@@ -80,8 +82,7 @@ class ModeCoordinator: ModeControllerDelegate {
     
     func modeDeactivated(controller: ModeController) {
         self.modeController = nil
-        self.openedMenu = nil
-        
+//        self.openedMenu = nil
         if self.forceKBLayout != nil {
             self.priorKBLayout?.select()
         }
@@ -126,7 +127,7 @@ class ModeCoordinator: ModeControllerDelegate {
         modeController!.activate()
     }
     
-    func setHintMode(mechanism: String) {
+    func setHintMode(mechanism: String, modifiers: ClickModifiers? = nil) {
         if let modeController = modeController {
             modeController.deactivate()
         }
@@ -138,7 +139,7 @@ class ModeCoordinator: ModeControllerDelegate {
         if let app = app {
             // the app crashes when talking to its own accessibility server
             let isTargetVimac = app.bundleIdentifier == Bundle.main.bundleIdentifier
-        if isTargetVimac {
+            if isTargetVimac {
                 return
             }
         }
@@ -154,7 +155,7 @@ class ModeCoordinator: ModeControllerDelegate {
         let activationCount = UserDefaults.standard.integer(forKey: "hintModeActivationCount")
         UserDefaults.standard.set(activationCount + 1, forKey: "hintModeActivationCount")
         
-        modeController = HintModeController(app: app, window: window, menu: openedMenu)
+        modeController = HintModeController(app: app, window: window, menu: openedMenu, modifiers: modifiers)
         modeController?.delegate = self
         modeController!.activate()
     }
@@ -172,7 +173,10 @@ class ModeCoordinator: ModeControllerDelegate {
     }
     
     func openedMenuElement() -> Element? {
-        guard let e = openedMenu else { return nil }
+        guard let e = openedMenu else {
+            os_log("[openedMenuElement] openedMenu is nil!")
+            return nil 
+        }
         
         // in addition to querying for useful attributes, it also tests for death of opened menu since it may no longer exist
         return Element.initialize(rawElement: e)
@@ -214,6 +218,13 @@ class ModeCoordinator: ModeControllerDelegate {
     
     func log(_ str: String) {
         os_log("%@", str)
+    }
+}
+
+extension ModeCoordinator: ModeControllerDelegate {
+    func switchAutoMenu() {
+        autoWithMenu = !autoWithMenu
+        os_log("[Hint Mode] autoWithMenu: %@", autoWithMenu ? "true" : "false")
     }
 }
 

@@ -10,6 +10,7 @@ import Cocoa
 import RxSwift
 import os
 import Segment
+import Preferences
 
 extension NSEvent {
     static func localEventMonitor(matching: EventTypeMask) -> Observable<NSEvent> {
@@ -56,6 +57,28 @@ enum HintModeInputIntent {
     case backspace
     case advance(by: String, action: HintAction)
 
+    case reload
+    case lock
+    case center
+    case grid
+
+    case optionModifier
+    case shiftModifier
+    case commandModifier
+    case controlModifier
+
+    case rightClick
+    case leftClick
+    case singleClick
+    case doubleClick
+    case tripleClick
+
+    case drag
+    case move
+
+    case showHelp
+    case showPreferences
+
     static func from(event: NSEvent) -> HintModeInputIntent? {
         if event.type != .keyDown { return nil }
         if event.keyCode == kVK_Escape ||
@@ -64,7 +87,27 @@ enum HintModeInputIntent {
             return .exit
         }
         if event.keyCode == kVK_Delete { return .backspace }
-        if event.keyCode == kVK_Space { return .rotate }
+        if event.keyCode == kVK_Tab { return .rotate }
+        
+        if event.keyCode == kVK_ANSI_Semicolon { return .move } // ";"
+        if event.keyCode == kVK_ANSI_Backslash { return .drag } // "\"
+        if event.keyCode == kVK_ANSI_Slash { return .showHelp } // "/"
+        if event.keyCode == kVK_ANSI_Comma { return .showPreferences } // ","
+        if event.keyCode == kVK_ANSI_Grave { return .center } // "`"
+        if event.keyCode == kVK_ANSI_Equal { return .grid }
+        
+        if event.keyCode == kVK_Return { return .leftClick }
+        if event.keyCode == kVK_Space { return .rightClick }
+
+        if event.keyCode == kVK_ANSI_R { return .reload }
+        if event.keyCode == kVK_ANSI_S { return .singleClick }
+        if event.keyCode == kVK_ANSI_T { return .tripleClick }
+        if event.keyCode == kVK_ANSI_U { return .lock }
+        if event.keyCode == kVK_ANSI_V { return .doubleClick }
+        if event.keyCode == kVK_ANSI_W { return .shiftModifier }
+        if event.keyCode == kVK_ANSI_X { return .commandModifier }
+        if event.keyCode == kVK_ANSI_Y { return .optionModifier }
+        if event.keyCode == kVK_ANSI_Z { return .controlModifier }
 
         if let characters = event.charactersIgnoringModifiers {
             let action: HintAction = {
@@ -177,8 +220,8 @@ class HintModeUserInterface {
         self.windowController.close()
     }
 
-    func setHints(hints: [Hint]) {
-        self.hintsViewController = HintsViewController(hints: hints, textSize: CGFloat(textSize), typed: "")
+    func setHints(hints: [Hint], modifiers: ClickModifiers) {
+        self.hintsViewController = HintsViewController(hints: hints, textSize: CGFloat(textSize), typed: "", modifiers: modifiers)
         self.contentViewController.setChildViewController(self.hintsViewController!)
     }
 
@@ -251,10 +294,28 @@ class WindowHintsUserInterface {
 
 }
 
+class ClickModifiers {
+    var option = false
+    var shift = false
+    var command = false
+    var control = false
+
+    var clicks = 1
+    var right = false
+    var drag = false
+    var move = false
+
+    var lock = false
+    var linkCenter = false
+    var grid = false
+}
+
 class HintModeController: ModeController {
     weak var delegate: ModeControllerDelegate?
     private var activated = false
-    
+
+    var modifiers: ClickModifiers
+
     private let startTime = CFAbsoluteTimeGetCurrent()
     private let disposeBag = DisposeBag()
 
@@ -271,10 +332,11 @@ class HintModeController: ModeController {
     let window: Element?
     let menu: Element?
     
-    init(app: NSRunningApplication?, window: Element?, menu: Element?) {
+    init(app: NSRunningApplication?, window: Element?, menu: Element?, modifiers: ClickModifiers? = nil) {
         self.app = app
         self.window = window
         self.menu = menu
+        self.modifiers = modifiers ?? ClickModifiers()
     }
 
     func activate() {
@@ -332,7 +394,7 @@ class HintModeController: ModeController {
         guard let ui = ui else { return }
         
         self.hints = hints
-        ui.setHints(hints: hints)
+        ui.setHints(hints: hints, modifiers: modifiers)
         
         listenForKeyPress(onEvent: { [weak self] event in
             self?.onKeyPress(event: event)
@@ -351,6 +413,77 @@ class HintModeController: ModeController {
                 "Target Application": self.app?.bundleIdentifier as Any
             ])
             ui.rotateHints()
+
+        case .lock:
+            modifiers.lock = !modifiers.lock
+            os_log("[Hint Mode] Lock Modifier %@", String(modifiers.lock))
+        case .reload:
+            self.deactivate()
+            let delegate = NSApplication.shared.delegate as! AppDelegate
+            let m = modifiers
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                delegate.modeCoordinator.setHintMode(mechanism: "Reload", modifiers: m)
+                os_log("[Hint Mode] Reload")
+            }
+        case .center:
+            self.deactivate()
+            modifiers.linkCenter = !modifiers.linkCenter
+            let delegate = NSApplication.shared.delegate as! AppDelegate
+            delegate.modeCoordinator.setHintMode(mechanism: "Center", modifiers: modifiers)
+            os_log("[Hint Mode] Center")
+
+        case .grid:
+            self.deactivate()
+            modifiers.grid = !modifiers.grid
+            let delegate = NSApplication.shared.delegate as! AppDelegate
+            delegate.modeCoordinator.setHintMode(mechanism: "Grid", modifiers: modifiers)
+            os_log("[Hint Mode] TODO: Grid")
+
+        case .optionModifier:
+            modifiers.option = !modifiers.option
+            os_log("[Hint Mode] Option Modifier %@", String(modifiers.option))
+        case .shiftModifier:
+            modifiers.shift = !modifiers.shift
+            os_log("[Hint Mode] Shift Modifier %@", String(modifiers.shift))
+        case .commandModifier:
+            modifiers.command = !modifiers.command
+            os_log("[Hint Mode] Command Modifier %@", String(modifiers.command))
+        case .controlModifier:
+            modifiers.control = !modifiers.control
+            os_log("[Hint Mode] Control Modifier %@", String(modifiers.control))
+
+        case .rightClick:
+            modifiers.right = true
+            modifiers.move = false
+            os_log("[Hint Mode] Right Click %@", String(modifiers.right))
+        case .leftClick:
+            modifiers.right = false
+            modifiers.move = false
+            os_log("[Hint Mode] Left Click %@", String(!modifiers.right))
+        case .singleClick:
+            modifiers.clicks = 1
+            os_log("[Hint Mode] Single Click")
+        case .doubleClick:
+            modifiers.clicks = 2
+            os_log("[Hint Mode] Double Click")
+        case .tripleClick:
+            modifiers.clicks = 3
+            os_log("[Hint Mode] Triple Click")
+
+        case .drag:
+            modifiers.drag = !modifiers.drag
+            os_log("[Hint Mode] TODO: Drag %@", String(modifiers.drag))
+            
+        case .move:
+            modifiers.move = !modifiers.move
+            os_log("[Hint Mode] Move %@", String(modifiers.move))
+
+        case .showHelp:
+            os_log("[Hint Mode] TODO: Show Help")
+            delegate?.switchAutoMenu()
+        case .showPreferences:
+            (NSApp.delegate as? AppDelegate)?.preferencesWindowController.show()
+
         case .backspace:
             _ = input.popLast()
             ui?.updateInput(input: input)
@@ -393,7 +526,16 @@ class HintModeController: ModeController {
                 ])
                 
                 self.deactivate()
-                performHintAction(matchingHint, action: action)
+                performHintAction(matchingHint, action: action, modifiers: modifiers)
+
+                if modifiers.lock {
+                    let m = self.modifiers
+                    // Some menu elements do not appear immediately
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        let delegate = NSApplication.shared.delegate as! AppDelegate
+                        delegate.modeCoordinator.setHintMode(mechanism: "Lock", modifiers: m)
+                    }
+                }
                 return
             }
         }
@@ -450,12 +592,13 @@ class HintModeController: ModeController {
             .disposed(by: disposeBag)
     }
     
-    private func performHintAction(_ hint: Hint, action: HintAction) {
+    private func performHintAction(_ hint: Hint, action: HintAction, modifiers: ClickModifiers) {
         let element = hint.element
         let clickPosition: NSPoint = {
             // hints are shown at the bottom-left for AXLinks (see HintsViewController#renderHint),
             // so a click is performed there
-            if element.role == "AXLink",
+            if !modifiers.linkCenter,
+               element.role == "AXLink",
                let _: URL = try? UIElement(element.rawElement).attribute(.url)
             {
                 return NSPoint(
@@ -469,15 +612,24 @@ class HintModeController: ModeController {
 
         Utils.moveMouse(position: clickPosition)
 
-        switch action {
-        case .leftClick:
-            Utils.leftClickMouse(position: clickPosition)
-        case .rightClick:
+        if modifiers.right {
             Utils.rightClickMouse(position: clickPosition)
-        case .doubleLeftClick:
+        } else if modifiers.clicks == 2 {
             Utils.doubleLeftClickMouse(position: clickPosition)
-        case .move:
+        } else if modifiers.clicks == 3 {
+            Utils.tripleLeftClickMouse(position: clickPosition)
+        } else if modifiers.move {
             Utils.moveMouse(position: clickPosition)
+        } else if modifiers.command {
+            Utils.leftClickMouse(position: clickPosition, flags: .maskCommand)
+        } else if modifiers.control {
+            Utils.leftClickMouse(position: clickPosition, flags: .maskControl)
+        } else if modifiers.shift {
+            Utils.leftClickMouse(position: clickPosition, flags: .maskShift)
+        } else if modifiers.option {
+            Utils.leftClickMouse(position: clickPosition, flags: .maskAlternate)
+        } else {
+            Utils.leftClickMouse(position: clickPosition)
         }
     }
     

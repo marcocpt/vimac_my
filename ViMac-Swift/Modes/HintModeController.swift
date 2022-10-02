@@ -227,41 +227,6 @@ class HintModeUserInterface {
         self.windowController.close()
     }
 
-    func switchShowHelp(with info: String, forceOn: Bool = false) {
-        guard let hintsViewController = hintsViewController else { return }
-        let helpView = hintsViewController.helpView
-        if forceOn || helpView.isHidden {
-            let fontSize: CGFloat = 13
-            let fontAttr: [NSFontDescriptor.AttributeName : Any] = [
-                .family: "SF Mono",
-                .face: "Medium",
-//                .fixedAdvance: fontSize / 2,
-//                .size: fontSize,
-            ]
-            let descriptor = NSFontDescriptor(fontAttributes: fontAttr)
-            let font = NSFont(descriptor: descriptor, size: fontSize)
-            let attributes: [NSAttributedString.Key : Any] = [
-                .font: font ?? .systemFont(ofSize: fontSize),
-                .foregroundColor: NSColor.textColor
-            ]
-            let attMuString = NSMutableAttributedString(string: info, attributes: attributes)
-            helpView.textStorage?.setAttributedString(attMuString)
-            
-            print("old helpView.frame: \(helpView.frame)")
-            helpView.isHidden = false
-            helpView.sizeToFit()
-            let origin: CGPoint = {
-                let bounds = hintsViewController.view.bounds
-                let size = helpView.frame.size
-                return CGPoint(x: bounds.midX - size.width / 2, y: bounds.midY - size.height / 2)
-            }()
-            helpView.frame.origin = origin
-            print("new helpView.frame: \(helpView.frame)")
-        } else {
-            helpView.isHidden = true
-        }
-    }
-    
     func setHints(hints: [Hint], modifiers: ClickModifiers) {
         self.hintsViewController = HintsViewController(hints: hints, textSize: CGFloat(textSize), typed: "", modifiers: modifiers)
         self.contentViewController.setChildViewController(self.hintsViewController!)
@@ -342,7 +307,9 @@ class ClickModifiers {
     var command = false
     var control = false
 
+    /// 只在 left 时有效
     var clicks = 1
+    /// right 不考虑 clicks 的值
     var right = false
     var drag = false
     var move = false
@@ -443,6 +410,7 @@ class HintModeController: ModeController {
         })
     }
     
+    /// - Tag: FIXME_HEV1
     private func onKeyPress(event: NSEvent) {
         guard let intent = HintModeInputIntent.from(event: event) else { return }
 
@@ -519,7 +487,7 @@ class HintModeController: ModeController {
 
         case .showHelp:
             os_log("[Hint Mode] TODO: Show Help")
-            ui?.switchShowHelp(with: helpInfo)
+            ui?.hintsViewController?.switchShowHelp(with: helpInfo)
         case .showPreferences:
             (NSApp.delegate as? AppDelegate)?.preferencesWindowController.show()
 
@@ -579,11 +547,15 @@ class HintModeController: ModeController {
             return
         }
         
-        if !HintModeInputIntent.notState.contains(intent) {
-            ui?.switchShowHelp(with: helpInfo, forceOn: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.ui?.switchShowHelp(with: self.helpInfo)
-            }
+        if !HintModeInputIntent.notState.contains(intent),
+           let hintsVC = ui?.hintsViewController
+        {
+            /// - Tag: FIXME_HEV1
+            hintsVC.switchShowHelp(with: helpInfo, forceOn: true)
+            let selector = #selector(HintsViewController.helpOff)
+            NSObject.cancelPreviousPerformRequests(withTarget: hintsVC, selector: selector, object: nil)
+            hintsVC.perform(selector, with: nil, afterDelay: 2)
+            
         }
     }
     
@@ -658,13 +630,13 @@ class HintModeController: ModeController {
 
         Utils.moveMouse(position: clickPosition)
 
-        if modifiers.right {
+        if action == .rightClick || modifiers.right {
             Utils.rightClickMouse(position: clickPosition)
-        } else if modifiers.clicks == 2 {
+        } else if action == .doubleLeftClick || modifiers.clicks == 2 {
             Utils.doubleLeftClickMouse(position: clickPosition)
         } else if modifiers.clicks == 3 {
             Utils.tripleLeftClickMouse(position: clickPosition)
-        } else if modifiers.move {
+        } else if action == .move || modifiers.move {
             Utils.moveMouse(position: clickPosition)
         } else if modifiers.command {
             Utils.leftClickMouse(position: clickPosition, flags: .maskCommand)
@@ -693,18 +665,18 @@ class HintModeController: ModeController {
         let spaceLine = "                            │"
         let tableLine = "────────────────────────────┼──────────────────────────────┤"
         let info1 =  """
-left|RightClick  Space   \((!modifiers.right).symbol) │
-singleClick      s       \((modifiers.clicks == 1).symbol) │
-doubleClick      v       \((modifiers.clicks == 2).symbol) │
-tripleClick      t       \((modifiers.clicks == 3).symbol) │
+Left|RightClick   , |⇧   \((!modifiers.right).symbol) │
+SingleClick      s       \((modifiers.clicks == 1).symbol) │
+DoubleClick      v, ⌘    \((modifiers.clicks == 2).symbol) │
+TripleClick      t       \((modifiers.clicks == 3).symbol) │
 \(spaceLine)
-autoMenu(+)      /       \((delegate?.autoMenuState ?? false).symbol) │
-center           `       \(modifiers.linkCenter.symbol) │
-lock             u       \(modifiers.lock.symbol) │
-drag             \\       \(modifiers.drag.symbol) │
-move             ;       \(modifiers.move.symbol) │
+AutoMenu(+)      /       \((delegate?.autoMenuState ?? false).symbol) │
+Center           `       \(modifiers.linkCenter.symbol) │
+Lock             u       \(modifiers.lock.symbol) │
+Drag             \\       \(modifiers.drag.symbol) │
+Move             ;, ⌥    \(modifiers.move.symbol) │
 \(spaceLine)
-showHelp         ⇧/         │
+Help             ⇧/         │
 """
         let info2 = """
 ⇧                w       \(modifiers.shift.symbol) │
@@ -712,13 +684,13 @@ showHelp         ⇧/         │
 ⌥                y       \(modifiers.option.symbol) │
 ^                z       \(modifiers.control.symbol) │
 \(spaceLine)
-backspace        Del        │
-exit             Esc, ^[    │
-grid             =          │
-reload           r          │
-rotate           ⇥          │
+Backspace        Del        │
+Exit             Esc, ^[    │
+Grid             =          │
+Reload           r          │
+Rotate           ⇥          │
 \(spaceLine)
-showPreferences  ,          │
+Preferences      ,          │
 """
         let lines1 = info1.split(separator: "\n")
         let lines2 = info2.split(separator: "\n")

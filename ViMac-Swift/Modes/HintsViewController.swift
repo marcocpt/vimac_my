@@ -19,9 +19,14 @@ class HintsViewController: NSViewController {
     
     lazy var helpView: NSTextView = {
         let textView = NSTextView()
-        let size = CGSize(width: 530, height: 200)
-        textView.frame = CGRect(origin: .zero, size: size)
+        textView.wantsLayer = true
+        textView.layer?.masksToBounds = true
+        textView.layer?.borderWidth = 1
+        textView.layer?.borderColor = NSColor.systemGray.cgColor
         view.addSubview(textView)
+        
+        let size = CGSize(width: 470, height: 200)
+        textView.frame = CGRect(origin: .zero, size: size)
         return textView
     }()
     
@@ -128,6 +133,43 @@ class HintsViewController: NSViewController {
         let viewFrame = window.contentView?.convert(windowFrame, to: self.view)
         
         return viewFrame
+    }
+    
+    @objc func helpOff() {
+        helpView.isHidden = true
+    }
+    
+    func switchShowHelp(with info: String, forceOn: Bool = false) {
+        if forceOn || helpView.isHidden {
+            let fontSize: CGFloat = 12
+            let fontAttr: [NSFontDescriptor.AttributeName : Any] = [
+                .family: "SF Mono",
+                .face: "Medium",
+                //                .fixedAdvance: fontSize / 2,
+                //                .size: fontSize,
+            ]
+            let descriptor = NSFontDescriptor(fontAttributes: fontAttr)
+            let font = NSFont(descriptor: descriptor, size: fontSize)
+            let attributes: [NSAttributedString.Key : Any] = [
+                .font: font ?? .systemFont(ofSize: fontSize),
+                .foregroundColor: NSColor.textColor
+            ]
+            let attMuString = NSMutableAttributedString(string: info, attributes: attributes)
+            helpView.textStorage?.setAttributedString(attMuString)
+            
+            print("old helpView.frame: \(helpView.frame)")
+            helpView.isHidden = false
+            helpView.sizeToFit()
+            let origin: CGPoint = {
+                let bounds = view.bounds
+                let size = helpView.frame.size
+                return CGPoint(x: bounds.midX - size.width / 2, y: 50)
+            }()
+            helpView.frame.origin = origin
+            print("new helpView.frame: \(helpView.frame)")
+        } else {
+            helpView.isHidden = true
+        }
     }
 }
 

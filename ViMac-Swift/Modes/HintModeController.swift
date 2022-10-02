@@ -342,7 +342,9 @@ class ClickModifiers {
     var command = false
     var control = false
 
+    /// 只在 left 时有效
     var clicks = 1
+    /// right 不考虑 clicks 的值
     var right = false
     var drag = false
     var move = false
@@ -658,13 +660,13 @@ class HintModeController: ModeController {
 
         Utils.moveMouse(position: clickPosition)
 
-        if modifiers.right {
+        if action == .rightClick || modifiers.right {
             Utils.rightClickMouse(position: clickPosition)
-        } else if modifiers.clicks == 2 {
+        } else if action == .doubleLeftClick || modifiers.clicks == 2 {
             Utils.doubleLeftClickMouse(position: clickPosition)
         } else if modifiers.clicks == 3 {
             Utils.tripleLeftClickMouse(position: clickPosition)
-        } else if modifiers.move {
+        } else if action == .move || modifiers.move {
             Utils.moveMouse(position: clickPosition)
         } else if modifiers.command {
             Utils.leftClickMouse(position: clickPosition, flags: .maskCommand)
@@ -693,18 +695,18 @@ class HintModeController: ModeController {
         let spaceLine = "                            │"
         let tableLine = "────────────────────────────┼──────────────────────────────┤"
         let info1 =  """
-left|RightClick  Space   \((!modifiers.right).symbol) │
-singleClick      s       \((modifiers.clicks == 1).symbol) │
-doubleClick      v       \((modifiers.clicks == 2).symbol) │
-tripleClick      t       \((modifiers.clicks == 3).symbol) │
+Left|RightClick   , |⇧   \((!modifiers.right).symbol) │
+SingleClick      s       \((modifiers.clicks == 1).symbol) │
+DoubleClick      v, ⌘    \((modifiers.clicks == 2).symbol) │
+TripleClick      t       \((modifiers.clicks == 3).symbol) │
 \(spaceLine)
-autoMenu(+)      /       \((delegate?.autoMenuState ?? false).symbol) │
-center           `       \(modifiers.linkCenter.symbol) │
-lock             u       \(modifiers.lock.symbol) │
-drag             \\       \(modifiers.drag.symbol) │
-move             ;       \(modifiers.move.symbol) │
+AutoMenu(+)      /       \((delegate?.autoMenuState ?? false).symbol) │
+Center           `       \(modifiers.linkCenter.symbol) │
+Lock             u       \(modifiers.lock.symbol) │
+Drag             \\       \(modifiers.drag.symbol) │
+Move             ;, ⌥    \(modifiers.move.symbol) │
 \(spaceLine)
-showHelp         ⇧/         │
+Help         ⇧/         │
 """
         let info2 = """
 ⇧                w       \(modifiers.shift.symbol) │
@@ -712,13 +714,13 @@ showHelp         ⇧/         │
 ⌥                y       \(modifiers.option.symbol) │
 ^                z       \(modifiers.control.symbol) │
 \(spaceLine)
-backspace        Del        │
-exit             Esc, ^[    │
-grid             =          │
-reload           r          │
-rotate           ⇥          │
+Backspace        Del        │
+Exit             Esc, ^[    │
+Grid             =          │
+Reload           r          │
+Rotate           ⇥          │
 \(spaceLine)
-showPreferences  ,          │
+Preferences  ,          │
 """
         let lines1 = info1.split(separator: "\n")
         let lines2 = info2.split(separator: "\n")

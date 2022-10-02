@@ -231,7 +231,7 @@ class HintModeUserInterface {
         guard let hintsViewController = hintsViewController else { return }
         let helpView = hintsViewController.helpView
         if forceOn || helpView.isHidden {
-            let fontSize: CGFloat = 13
+            let fontSize: CGFloat = 12
             let fontAttr: [NSFontDescriptor.AttributeName : Any] = [
                 .family: "SF Mono",
                 .face: "Medium",
@@ -253,7 +253,7 @@ class HintModeUserInterface {
             let origin: CGPoint = {
                 let bounds = hintsViewController.view.bounds
                 let size = helpView.frame.size
-                return CGPoint(x: bounds.midX - size.width / 2, y: bounds.midY - size.height / 2)
+                return CGPoint(x: bounds.midX - size.width / 2, y: 50)
             }()
             helpView.frame.origin = origin
             print("new helpView.frame: \(helpView.frame)")
@@ -706,7 +706,7 @@ Lock             u       \(modifiers.lock.symbol) │
 Drag             \\       \(modifiers.drag.symbol) │
 Move             ;, ⌥    \(modifiers.move.symbol) │
 \(spaceLine)
-Help         ⇧/         │
+Help             ⇧/         │
 """
         let info2 = """
 ⇧                w       \(modifiers.shift.symbol) │
@@ -720,7 +720,7 @@ Grid             =          │
 Reload           r          │
 Rotate           ⇥          │
 \(spaceLine)
-Preferences  ,          │
+Preferences      ,          │
 """
         let lines1 = info1.split(separator: "\n")
         let lines2 = info2.split(separator: "\n")

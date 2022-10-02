@@ -19,9 +19,14 @@ class HintsViewController: NSViewController {
     
     lazy var helpView: NSTextView = {
         let textView = NSTextView()
-        let size = CGSize(width: 530, height: 200)
-        textView.frame = CGRect(origin: .zero, size: size)
+        textView.wantsLayer = true
+        textView.layer?.masksToBounds = true
+        textView.layer?.borderWidth = 1
+        textView.layer?.borderColor = NSColor.systemGray.cgColor
         view.addSubview(textView)
+        
+        let size = CGSize(width: 470, height: 200)
+        textView.frame = CGRect(origin: .zero, size: size)
         return textView
     }()
     

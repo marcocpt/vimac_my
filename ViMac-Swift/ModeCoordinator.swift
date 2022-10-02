@@ -222,6 +222,10 @@ class ModeCoordinator {
 }
 
 extension ModeCoordinator: ModeControllerDelegate {
+    var autoMenuState: Bool {
+        autoWithMenu
+    }
+    
     func switchAutoMenu() {
         autoWithMenu = !autoWithMenu
         os_log("[Hint Mode] autoWithMenu: %@", autoWithMenu ? "true" : "false")

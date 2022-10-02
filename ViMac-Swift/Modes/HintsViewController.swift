@@ -17,6 +17,14 @@ class HintsViewController: NSViewController {
     var hintViews: [HintView]!
     let modifiers: ClickModifiers
     
+    lazy var helpView: NSTextView = {
+        let textView = NSTextView()
+        let size = CGSize(width: 530, height: 200)
+        textView.frame = CGRect(origin: .zero, size: size)
+        view.addSubview(textView)
+        return textView
+    }()
+    
     init(hints: [Hint], textSize: CGFloat, typed: String = "", modifiers: ClickModifiers) {
         self.hints = hints
         self.textSize = textSize
@@ -43,6 +51,13 @@ class HintsViewController: NSViewController {
         for hintView in self.hintViews {
             self.view.addSubview(hintView)
         }
+        
+        helpView.isHidden = true
+    }
+    
+    override func viewDidDisappear() {
+        super.viewDidDisappear()
+        helpView.isHidden = true
     }
     
     func updateTyped(typed: String) {

@@ -51,7 +51,8 @@ extension NSEvent {
     }
 }
 
-enum HintModeInputIntent {
+enum HintModeInputIntent: Equatable {
+    case autoMenu
     case rotate
     case exit
     case backspace
@@ -68,7 +69,6 @@ enum HintModeInputIntent {
     case controlModifier
 
     case rightClick
-    case leftClick
     case singleClick
     case doubleClick
     case tripleClick
@@ -79,11 +79,13 @@ enum HintModeInputIntent {
     case showHelp
     case showPreferences
 
+    static let notState: [HintModeInputIntent] = [.rotate, .exit, .backspace, .showHelp, .showPreferences]
+    
     static func from(event: NSEvent) -> HintModeInputIntent? {
         if event.type != .keyDown { return nil }
+        let modifierkeys = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if event.keyCode == kVK_Escape ||
-            (event.keyCode == kVK_ANSI_LeftBracket &&
-                event.modifierFlags.rawValue & NSEvent.ModifierFlags.control.rawValue == NSEvent.ModifierFlags.control.rawValue) {
+            (event.keyCode == kVK_ANSI_LeftBracket && modifierkeys == .control) {
             return .exit
         }
         if event.keyCode == kVK_Delete { return .backspace }
@@ -91,12 +93,17 @@ enum HintModeInputIntent {
         
         if event.keyCode == kVK_ANSI_Semicolon { return .move } // ";"
         if event.keyCode == kVK_ANSI_Backslash { return .drag } // "\"
-        if event.keyCode == kVK_ANSI_Slash { return .showHelp } // "/"
+        if event.keyCode == kVK_ANSI_Slash { // "/"
+            if modifierkeys == .shift {
+                return .showHelp
+            } else {
+                return .autoMenu
+            }
+        } 
         if event.keyCode == kVK_ANSI_Comma { return .showPreferences } // ","
         if event.keyCode == kVK_ANSI_Grave { return .center } // "`"
         if event.keyCode == kVK_ANSI_Equal { return .grid }
         
-        if event.keyCode == kVK_Return { return .leftClick }
         if event.keyCode == kVK_Space { return .rightClick }
 
         if event.keyCode == kVK_ANSI_R { return .reload }
@@ -111,11 +118,11 @@ enum HintModeInputIntent {
 
         if let characters = event.charactersIgnoringModifiers {
             let action: HintAction = {
-                if (event.modifierFlags.rawValue & NSEvent.ModifierFlags.shift.rawValue == NSEvent.ModifierFlags.shift.rawValue) {
+                if modifierkeys == .shift {
                     return .rightClick
-                } else if (event.modifierFlags.rawValue & NSEvent.ModifierFlags.command.rawValue == NSEvent.ModifierFlags.command.rawValue) {
+                } else if modifierkeys == .command {
                     return .doubleLeftClick
-                } else if (event.modifierFlags.rawValue & NSEvent.ModifierFlags.option.rawValue == NSEvent.ModifierFlags.option.rawValue) {
+                } else if modifierkeys == .option {
                     return .move
                 } else {
                     return .leftClick
@@ -220,6 +227,41 @@ class HintModeUserInterface {
         self.windowController.close()
     }
 
+    func switchShowHelp(with info: String, forceOn: Bool = false) {
+        guard let hintsViewController = hintsViewController else { return }
+        let helpView = hintsViewController.helpView
+        if forceOn || helpView.isHidden {
+            let fontSize: CGFloat = 13
+            let fontAttr: [NSFontDescriptor.AttributeName : Any] = [
+                .family: "SF Mono",
+                .face: "Medium",
+//                .fixedAdvance: fontSize / 2,
+//                .size: fontSize,
+            ]
+            let descriptor = NSFontDescriptor(fontAttributes: fontAttr)
+            let font = NSFont(descriptor: descriptor, size: fontSize)
+            let attributes: [NSAttributedString.Key : Any] = [
+                .font: font ?? .systemFont(ofSize: fontSize),
+                .foregroundColor: NSColor.textColor
+            ]
+            let attMuString = NSMutableAttributedString(string: info, attributes: attributes)
+            helpView.textStorage?.setAttributedString(attMuString)
+            
+            print("old helpView.frame: \(helpView.frame)")
+            helpView.isHidden = false
+            helpView.sizeToFit()
+            let origin: CGPoint = {
+                let bounds = hintsViewController.view.bounds
+                let size = helpView.frame.size
+                return CGPoint(x: bounds.midX - size.width / 2, y: bounds.midY - size.height / 2)
+            }()
+            helpView.frame.origin = origin
+            print("new helpView.frame: \(helpView.frame)")
+        } else {
+            helpView.isHidden = true
+        }
+    }
+    
     func setHints(hints: [Hint], modifiers: ClickModifiers) {
         self.hintsViewController = HintsViewController(hints: hints, textSize: CGFloat(textSize), typed: "", modifiers: modifiers)
         self.contentViewController.setChildViewController(self.hintsViewController!)
@@ -405,6 +447,9 @@ class HintModeController: ModeController {
         guard let intent = HintModeInputIntent.from(event: event) else { return }
 
         switch intent {
+        case .autoMenu:
+            os_log("[Hint Mode] Auto menu")
+            delegate?.switchAutoMenu()
         case .exit:
             self.deactivate()
         case .rotate:
@@ -413,7 +458,6 @@ class HintModeController: ModeController {
                 "Target Application": self.app?.bundleIdentifier as Any
             ])
             ui.rotateHints()
-
         case .lock:
             modifiers.lock = !modifiers.lock
             os_log("[Hint Mode] Lock Modifier %@", String(modifiers.lock))
@@ -451,15 +495,10 @@ class HintModeController: ModeController {
         case .controlModifier:
             modifiers.control = !modifiers.control
             os_log("[Hint Mode] Control Modifier %@", String(modifiers.control))
-
         case .rightClick:
-            modifiers.right = true
+            modifiers.right = !modifiers.right
             modifiers.move = false
-            os_log("[Hint Mode] Right Click %@", String(modifiers.right))
-        case .leftClick:
-            modifiers.right = false
-            modifiers.move = false
-            os_log("[Hint Mode] Left Click %@", String(!modifiers.right))
+            os_log("[Hint Mode] Left|Right Switch to %@", String(modifiers.right ? "right" : "left" ))
         case .singleClick:
             modifiers.clicks = 1
             os_log("[Hint Mode] Single Click")
@@ -480,7 +519,7 @@ class HintModeController: ModeController {
 
         case .showHelp:
             os_log("[Hint Mode] TODO: Show Help")
-            delegate?.switchAutoMenu()
+            ui?.switchShowHelp(with: helpInfo)
         case .showPreferences:
             (NSApp.delegate as? AppDelegate)?.preferencesWindowController.show()
 
@@ -536,7 +575,14 @@ class HintModeController: ModeController {
                         delegate.modeCoordinator.setHintMode(mechanism: "Lock", modifiers: m)
                     }
                 }
-                return
+            }
+            return
+        }
+        
+        if !HintModeInputIntent.notState.contains(intent) {
+            ui?.switchShowHelp(with: helpInfo, forceOn: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.ui?.switchShowHelp(with: self.helpInfo)
             }
         }
     }
@@ -640,6 +686,58 @@ class HintModeController: ModeController {
 
     private func logError(_ e: Error) {
         os_log("[Hint mode] query error: %@", log: Log.accessibility, String(describing: e))
+    }
+    
+    private var helpInfo: String {
+//        let spaceLine = "                            |"
+        let spaceLine = "                            │"
+        let tableLine = "────────────────────────────┼──────────────────────────────┤"
+        let info1 =  """
+left|RightClick  Space   \((!modifiers.right).symbol) │
+singleClick      s       \((modifiers.clicks == 1).symbol) │
+doubleClick      v       \((modifiers.clicks == 2).symbol) │
+tripleClick      t       \((modifiers.clicks == 3).symbol) │
+\(spaceLine)
+autoMenu(+)      /       \((delegate?.autoMenuState ?? false).symbol) │
+center           `       \(modifiers.linkCenter.symbol) │
+lock             u       \(modifiers.lock.symbol) │
+drag             \\       \(modifiers.drag.symbol) │
+move             ;       \(modifiers.move.symbol) │
+\(spaceLine)
+showHelp         ⇧/         │
+"""
+        let info2 = """
+⇧                w       \(modifiers.shift.symbol) │
+⌘                x       \(modifiers.command.symbol) │
+⌥                y       \(modifiers.option.symbol) │
+^                z       \(modifiers.control.symbol) │
+\(spaceLine)
+backspace        Del        │
+exit             Esc, ^[    │
+grid             =          │
+reload           r          │
+rotate           ⇥          │
+\(spaceLine)
+showPreferences  ,          │
+"""
+        let lines1 = info1.split(separator: "\n")
+        let lines2 = info2.split(separator: "\n")
+        let lines1Count = lines1.count
+        let lines2Count = lines2.count
+
+        assert(lines1Count >= lines2Count)
+        
+        return (0 ..< lines1Count).map {
+            let line1 = lines1[$0]
+            guard $0 < lines2Count else {
+                return tableLine
+            }
+            let line2 = lines2[$0]
+            if line1 == line2 {
+                return "\n"
+            }
+            return "\(line1)  \(line2)"
+        }.joined(separator: "\n")
     }
 }
 
@@ -806,5 +904,24 @@ class QueryHintableWindowsService {
             }
         }
         return windowInfosClusters
+    }
+}
+
+extension Bool {
+    var symbol: String {
+        self ? "🟢" : "🔴"
+    }
+}
+
+extension StringProtocol {
+    func fix(width: Int, append: Character = " ") -> String {
+        let count = self.count
+        assert(width >= count)
+        if count < width {
+            let spaces = String(repeating: append, count: width - count)
+            return appending(spaces)
+        }
+        
+        return String(self)
     }
 }

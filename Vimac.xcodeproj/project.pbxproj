@@ -137,6 +137,7 @@
 		7677AB73AD55CB183067A498 /* Pods-VimacUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacUITests.release.xcconfig"; path = "Target Support Files/Pods-VimacUITests/Pods-VimacUITests.release.xcconfig"; sourceTree = "<group>"; };
 		824743387EB077A984803D5C /* Pods-VimacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacTests.debug.xcconfig"; path = "Target Support Files/Pods-VimacTests/Pods-VimacTests.debug.xcconfig"; sourceTree = "<group>"; };
 		851BCE0628E77F33000E075C /* FIXME.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FIXME.md; sourceTree = "<group>"; };
+		8569BBD528EA462A003E1A77 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		85E207A8CB4C294752F7C738 /* Pods_VimacUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VimacUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6BBF07B6655F54781C7A225 /* Pods_Vimac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Vimac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3D6841E02A20AE804E019B5 /* Pods-VimacTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacTests.release.xcconfig"; path = "Target Support Files/Pods-VimacTests/Pods-VimacTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -274,6 +275,7 @@
 			isa = PBXGroup;
 			children = (
 				851BCE0628E77F33000E075C /* FIXME.md */,
+				8569BBD528EA462A003E1A77 /* TODO.md */,
 			);
 			path = Doument;
 			sourceTree = "<group>";

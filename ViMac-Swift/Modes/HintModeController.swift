@@ -227,41 +227,6 @@ class HintModeUserInterface {
         self.windowController.close()
     }
 
-    func switchShowHelp(with info: String, forceOn: Bool = false) {
-        guard let hintsViewController = hintsViewController else { return }
-        let helpView = hintsViewController.helpView
-        if forceOn || helpView.isHidden {
-            let fontSize: CGFloat = 12
-            let fontAttr: [NSFontDescriptor.AttributeName : Any] = [
-                .family: "SF Mono",
-                .face: "Medium",
-//                .fixedAdvance: fontSize / 2,
-//                .size: fontSize,
-            ]
-            let descriptor = NSFontDescriptor(fontAttributes: fontAttr)
-            let font = NSFont(descriptor: descriptor, size: fontSize)
-            let attributes: [NSAttributedString.Key : Any] = [
-                .font: font ?? .systemFont(ofSize: fontSize),
-                .foregroundColor: NSColor.textColor
-            ]
-            let attMuString = NSMutableAttributedString(string: info, attributes: attributes)
-            helpView.textStorage?.setAttributedString(attMuString)
-            
-            print("old helpView.frame: \(helpView.frame)")
-            helpView.isHidden = false
-            helpView.sizeToFit()
-            let origin: CGPoint = {
-                let bounds = hintsViewController.view.bounds
-                let size = helpView.frame.size
-                return CGPoint(x: bounds.midX - size.width / 2, y: 50)
-            }()
-            helpView.frame.origin = origin
-            print("new helpView.frame: \(helpView.frame)")
-        } else {
-            helpView.isHidden = true
-        }
-    }
-    
     func setHints(hints: [Hint], modifiers: ClickModifiers) {
         self.hintsViewController = HintsViewController(hints: hints, textSize: CGFloat(textSize), typed: "", modifiers: modifiers)
         self.contentViewController.setChildViewController(self.hintsViewController!)
@@ -445,6 +410,7 @@ class HintModeController: ModeController {
         })
     }
     
+    /// - Tag: FIXME_HEV1
     private func onKeyPress(event: NSEvent) {
         guard let intent = HintModeInputIntent.from(event: event) else { return }
 
@@ -521,7 +487,7 @@ class HintModeController: ModeController {
 
         case .showHelp:
             os_log("[Hint Mode] TODO: Show Help")
-            ui?.switchShowHelp(with: helpInfo)
+            ui?.hintsViewController?.switchShowHelp(with: helpInfo)
         case .showPreferences:
             (NSApp.delegate as? AppDelegate)?.preferencesWindowController.show()
 
@@ -581,11 +547,15 @@ class HintModeController: ModeController {
             return
         }
         
-        if !HintModeInputIntent.notState.contains(intent) {
-            ui?.switchShowHelp(with: helpInfo, forceOn: true)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                self.ui?.switchShowHelp(with: self.helpInfo)
-            }
+        if !HintModeInputIntent.notState.contains(intent),
+           let hintsVC = ui?.hintsViewController
+        {
+            /// - Tag: FIXME_HEV1
+            hintsVC.switchShowHelp(with: helpInfo, forceOn: true)
+            let selector = #selector(HintsViewController.helpOff)
+            NSObject.cancelPreviousPerformRequests(withTarget: hintsVC, selector: selector, object: nil)
+            hintsVC.perform(selector, with: nil, afterDelay: 2)
+            
         }
     }
     

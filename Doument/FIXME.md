@@ -13,7 +13,7 @@
 
 ## HelpView
 
-- [ ] [FIXME_HEV1] : 快速切换状态时，延时显示错误 
+- [X] [FIXME_HEV1](x-source-tag://FIXME_HEV1) : 快速切换状态时，延时显示错误
 
 ## HintView
 

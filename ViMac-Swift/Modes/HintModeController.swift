@@ -105,17 +105,19 @@ enum HintModeInputIntent: Equatable {
         if event.keyCode == kVK_ANSI_Equal { return .grid }
         
         if event.keyCode == kVK_Space { return .rightClick }
-
-        if event.keyCode == kVK_ANSI_R { return .reload }
-        if event.keyCode == kVK_ANSI_S { return .singleClick }
-        if event.keyCode == kVK_ANSI_T { return .tripleClick }
-        if event.keyCode == kVK_ANSI_U { return .lock }
-        if event.keyCode == kVK_ANSI_V { return .doubleClick }
-        if event.keyCode == kVK_ANSI_W { return .shiftModifier }
-        if event.keyCode == kVK_ANSI_X { return .commandModifier }
-        if event.keyCode == kVK_ANSI_Y { return .optionModifier }
-        if event.keyCode == kVK_ANSI_Z { return .controlModifier }
-
+        
+        if modifierkeys == .control {
+            if event.keyCode == kVK_ANSI_R { return .reload }
+            if event.keyCode == kVK_ANSI_S { return .singleClick }
+            if event.keyCode == kVK_ANSI_T { return .tripleClick }
+            if event.keyCode == kVK_ANSI_U { return .lock }
+            if event.keyCode == kVK_ANSI_V { return .doubleClick }
+            if event.keyCode == kVK_ANSI_W { return .shiftModifier }
+            if event.keyCode == kVK_ANSI_X { return .commandModifier }
+            if event.keyCode == kVK_ANSI_Y { return .optionModifier }
+            if event.keyCode == kVK_ANSI_Z { return .controlModifier }
+        }
+        
         if let characters = event.charactersIgnoringModifiers {
             let action: HintAction = {
                 if modifierkeys == .shift {
@@ -666,28 +668,28 @@ class HintModeController: ModeController {
         let tableLine = "────────────────────────────┼──────────────────────────────┤"
         let info1 =  """
 Left|RightClick   , |⇧   \((!modifiers.right).symbol) │
-SingleClick      s       \((modifiers.clicks == 1).symbol) │
-DoubleClick      v, ⌘    \((modifiers.clicks == 2).symbol) │
-TripleClick      t       \((modifiers.clicks == 3).symbol) │
+SingleClick      S       \((modifiers.clicks == 1).symbol) │
+DoubleClick      V, ⌘    \((modifiers.clicks == 2).symbol) │
+TripleClick      T       \((modifiers.clicks == 3).symbol) │
 \(spaceLine)
 AutoMenu(+)      /       \((delegate?.autoMenuState ?? false).symbol) │
 Center           `       \(modifiers.linkCenter.symbol) │
-Lock             u       \(modifiers.lock.symbol) │
+Lock             U       \(modifiers.lock.symbol) │
 Drag             \\       \(modifiers.drag.symbol) │
 Move             ;, ⌥    \(modifiers.move.symbol) │
 \(spaceLine)
-Help             ⇧/         │
+Help             ?          │
 """
         let info2 = """
-⇧                w       \(modifiers.shift.symbol) │
-⌘                x       \(modifiers.command.symbol) │
-⌥                y       \(modifiers.option.symbol) │
-^                z       \(modifiers.control.symbol) │
+⇧                W       \(modifiers.shift.symbol) │
+⌘                X       \(modifiers.command.symbol) │
+⌥                Y       \(modifiers.option.symbol) │
+^                Z       \(modifiers.control.symbol) │
 \(spaceLine)
 Backspace        Del        │
 Exit             Esc, ^[    │
 Grid             =          │
-Reload           r          │
+Reload           R          │
 Rotate           ⇥          │
 \(spaceLine)
 Preferences      ,          │

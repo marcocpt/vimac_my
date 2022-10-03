@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 import AXSwift
 
 class Element {
@@ -22,12 +23,17 @@ class Element {
         let valuesOptional = try? uiElement.getMultipleAttributes([.size, .position, .role])
         
         guard let values = valuesOptional else {
+            os_log("[Element] init nil")
             return nil
         }
 
-        guard let size: NSSize = values[Attribute.size] as! NSSize? else { return nil }
-        guard let position: NSPoint = values[Attribute.position] as! NSPoint? else { return nil }
-        guard let role: String = values[Attribute.role] as! String? else { return nil }
+        guard let size = values[Attribute.size] as? CGSize,
+              let position = values[Attribute.position] as? CGPoint,
+              let role = values[Attribute.role] as? String else 
+        { 
+            os_log("[Element] init nil")
+            return nil 
+        }
         let frame = NSRect(origin: position, size: size)
 
         let actions = try? uiElement.actionsAsStrings()

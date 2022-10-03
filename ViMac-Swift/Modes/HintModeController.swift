@@ -897,3 +897,11 @@ extension StringProtocol {
         return String(self)
     }
 }
+
+extension Hint: CustomStringConvertible {
+    var description: String {
+        let textStr = String(format: "text: %-3s", text.cstr!)
+        return "\(textStr) \(element)"
+    }
+}
+

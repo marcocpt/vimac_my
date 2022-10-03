@@ -46,3 +46,24 @@ class Element {
         self.clippedFrame = clippedFrame
     }
 }
+
+
+extension Element: CustomStringConvertible {
+    var description: String {
+        let roleStr = String(format: "role: %-14s", role.cstr!)
+        let actionsStr = actions.joined(separator: ", ")
+        return "\(frame) \(roleStr) [\(actionsStr)]"
+    }
+}
+
+extension CGRect: CustomStringConvertible {
+    public var description: String {
+        String(format: "r:(%5.f, %5.f, %4.f, %4.f)", origin.x, origin.y, size.width, size.height)
+    }
+}
+
+extension String {
+    var cstr: UnsafePointer<CChar>? {
+        (self as NSString).utf8String
+    }
+}

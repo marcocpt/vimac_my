@@ -56,12 +56,11 @@ class HintsViewController: NSViewController {
             .compactMap({ $0 })
         #if DEBUG
         logHints()
-        view.layer?.sublayers = []
         for hintView in self.hintViews {
-            if let shape = shape(with: hintView) {
+            view.addSubview(hintView)
+            if let shape = hintView.shape {
                 view.layer?.addSublayer(shape)
             }
-            view.addSubview(hintView)
         }
         #else
         for hintView in self.hintViews {
@@ -83,9 +82,11 @@ class HintsViewController: NSViewController {
         self.typed = typed
         hintViews.forEach { hintView in
             hintView.isHidden = true
+            hintView.shape?.isHidden = true
             if hintView.hintTextView!.stringValue.starts(with: typed.uppercased()) {
                 hintView.updateTypedText(typed: typed)
                 hintView.isHidden = false
+                hintView.shape?.isHidden = false
             }
         }
     }
@@ -93,11 +94,15 @@ class HintsViewController: NSViewController {
     func rotateHints() {
         for hintView in hintViews {
             hintView.removeFromSuperview()
+            hintView.shape?.removeFromSuperlayer()
         }
         
         let shuffledHintViews = hintViews.shuffled()
         for hintView in shuffledHintViews {
             self.view.addSubview(hintView)
+            if let shape = hintView.shape {
+                view.layer?.addSublayer(shape)
+            }
         }
         self.hintViews = shuffledHintViews
     }

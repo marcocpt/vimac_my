@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 import AXSwift
 
 let scale: CGFloat = 1.0  // adjust to debug at a larger size
@@ -22,7 +23,9 @@ class HintView: NSView {
     
     let borderWidth: CGFloat = 1.0 * scale
     let cornerRadius: CGFloat = 2.0 * scale
-
+    
+    private(set) lazy var shape = createShape() 
+    
     required init(associatedElement: Element, hintTextSize: CGFloat, hintText: String, typedHintText: String) {
         self.associatedElement = associatedElement
         super.init(frame: .zero)
@@ -112,6 +115,48 @@ class HintView: NSView {
     
     func updateTypedText(typed: String) {
         self.hintTextView!.updateTypedText(typed: typed)
+    }
+}
+
+private extension HintView {
+    func createShape() -> CAShapeLayer? {
+        let shape = CAShapeLayer()
+        guard let frame = elementFrame(associatedElement) else {
+            os_log("frame is nil of element: %@", associatedElement.description)
+            return nil
+        }
+        shape.frame = frame
+        let bounds = shape.bounds
+        let path = CGMutablePath()
+        path.addLines(between: [
+            .zero,
+            CGPoint(x: bounds.origin.x, y: bounds.maxY),
+            CGPoint(x: bounds.maxX, y: bounds.maxY),
+            CGPoint(x: bounds.maxX, y: bounds.origin.y),
+            .zero
+        ])
+        shape.path = path
+        shape.lineWidth = 0.8
+//        shape.lineDashPattern = [2, 4]
+        shape.strokeColor = NSColor.red.cgColor
+        shape.backgroundColor = nil
+        shape.fillColor = nil
+        return shape
+    }
+    
+    func elementFrame(_ element: Element) -> NSRect? {
+        guard let superview = superview else {
+            os_log("❌ need to add hintView to the superview before using it")
+            return nil 
+        }
+        guard let window = superview.window else { return nil }
+        
+        let globalFrame = GeometryUtils.convertAXFrameToGlobal(
+            element.clippedFrame ?? element.frame)
+        let windowFrame = window.convertFromScreen(globalFrame)
+        let viewFrame = window.contentView?.convert(windowFrame, to: superview)
+        
+        return viewFrame
     }
 }
 

@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 import RxSwift
 import AXSwift
 
@@ -25,13 +26,29 @@ class HintModeQueryService {
     
     func perform() -> Observable<Hint> {
         let elements = elementObservable().share()
-        let count = elements.toArray().map({ $0.count })
+        let elementsArray = elements.toArray()
+        let count = elementsArray.map({ $0.count })
         let hintStrings: Observable<String> = count
             .map { AlphabetHints().hintStrings(linkCount: $0, hintCharacters: self.hintCharacters) }
             .asObservable()
             .flatMap({ Observable.from($0) })
         
+        #if DEBUG
+        var typeCounts = [String: Int]()
+        let hints = elements.map {
+            let r = $0.role.roleKey
+            let currentCount: Int
+            if let count = typeCounts[r] { 
+                currentCount = count + 1
+            } else {
+                currentCount = 10
+            }
+            typeCounts[r] = currentCount
+            return Hint(element: $0, text: "\(r)\(currentCount)")
+        }
+        #else
         let hints = Observable.zip(elements, hintStrings).map { Hint(element: $0, text: $1) }
+        #endif
         return hints
     }
     
@@ -142,3 +159,91 @@ class HintModeQueryService {
         })
     }
 }
+
+extension String {
+    var roleKey: String {
+        switch self {
+        case "AXApplication"        : return "A"
+        case "AXButton"             : return "B"
+        case "AXCheckBox"           : return "C"
+        case "AXDisclosureTriangle" : return "D"
+        case "AXCell"               : return "E"
+        case "AXTextField"          : return "F"
+        case "AXGroup"              : return "G"
+            
+        case "AXImage"              : return "I" // x
+        case "AXScrollArea"         : return "J"
+            
+        case "AXLink"               : return "L"
+        case "AXMenuBarItem"        : return "M"
+            
+        case "AXOutline"            : return "O"
+        case "AXPopUpButton"        : return "P"
+        case "AXRow"                : return "Q"
+        case "AXRadioButton"        : return "R"
+        case "AXStaticText"         : return "S"
+        case "AXTextArea"           : return "T"
+        case "AXUnknown"            : return "U"
+            
+        case "AXWindow"             : return "W" // x
+            
+            
+        case "AXBusyIndicator"      : return "BI"
+        case "AXBrowser"            : return "BU"
+        
+        case "AXColumn"             : return "CN"
+        case "AXComboBox"           : return "CO"
+        case "AXColorWell"          : return "CW"
+            
+        case "AXDrawer"             : return "DR"
+        
+        case "AXGrowArea"           : return "GA"
+        case "AXGrid"               : return "GI"
+            
+        case "AXHandle"             : return "HA"
+        case "AXHelpTag"            : return "HT"
+        
+        case "AXIncrementor"        : return "IN"
+
+        case "AXLayoutArea"         : return "LA"
+        case "AXLevelIndicator"     : return "LD"
+        case "AXLayoutItem"         : return "LI"
+        case "AXList"               : return "LS"
+            
+        case "AXMatte"              : return "MA"
+        case "AXMenuBar"            : return "MB"
+        case "AXMenuButton"         : return "ME"
+        case "AXMenuItem"           : return "MI"
+        case "AXMenu"               : return "MU"
+            
+        case "AXProgressIndicator"  : return "PI"
+        case "AXPopover"            : return "PO"
+        
+        case "AXRadioGroup"         : return "RG"
+        case "AXRelevanceIndicator" : return "RI"
+        case "AXRulerMarker"        : return "RM"
+       
+        case "AXRuler"              : return "RU"
+        
+        case "AXScrollBar"          : return "SB"
+        case "AXSplitGroup"         : return "SG"
+        case "AXSheet"              : return "SH"
+        case "AXSlider"             : return "SL"
+        case "AXSplitter"           : return "SP"
+        case "AXSystemWide"         : return "SW"
+        
+        case "AXToolbar"            : return "TB"
+        case "AXTable"              : return "TE"
+        case "AXTabGroup"           : return "TG"
+        
+        case "AXValueIndicator"     : return "VI"
+        
+        case "AXWebArea"            : return "WA"
+        default:
+            print("unknow: \(self)")
+            return "Z"
+        }
+    }
+}
+
+

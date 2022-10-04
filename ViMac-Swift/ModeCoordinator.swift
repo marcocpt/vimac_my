@@ -31,6 +31,13 @@ class ModeCoordinator {
     
     var modeController: ModeController?
     
+    /// - Tag: FIXME_M1
+    var currentApp: NSRunningApplication? {
+        didSet {
+            openedMenu = nil /// - Tag: FIXME_M1
+        }
+    }
+    
     init() {
         self.keySequenceListener = VimacKeySequenceListener()
         self.keySequenceListener.start()

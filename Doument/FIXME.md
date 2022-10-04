@@ -21,6 +21,6 @@
 
 ## Menu 
 
-- [ ] [FIXME_M1] : app1 打开菜单 -> 切换到 app2 -| `openedMenu` 未清空?
+- [x] [FIXME_M1](x-source-tag://FIXME_M1) : app1 打开菜单 -> 切换到 app2 -| `openedMenu` 未清空?
 - [ ] [FIXME_M2] : [[lock]] on -> 打开菜单栏 submenu1 -> 打开 submenu2 -| submenu2 会消失，需要改为 move
 - [ ] [FIXME_M3] : [[Xcode]] [[AutoMenu]] 和 [[Lock]] 失效 

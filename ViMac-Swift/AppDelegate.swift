@@ -239,6 +239,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             })
         )
         
+        frontmostAppService.observeFrontmostApp { [weak self] app in
+            guard let self = self else { return }
+            if self.modeCoordinator.currentApp != app {
+                self.modeCoordinator.currentApp = app
+                self.modeCoordinator.openedMenu = nil
+            }
+        }
+        
         self.frontmostAppService.observeMenuOpened({ [weak self] menu in
             guard let self = self else { return }
             

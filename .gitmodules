@@ -1,0 +1,3 @@
+[submodule "My/AXSwift_my"]
+	path = My/AXSwift_my
+	url = https://github.com/marcocpt/AXSwift_my.git

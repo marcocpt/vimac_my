@@ -3,11 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		285448C8DFA037E9228938B9 /* Pods_Vimac.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6BBF07B6655F54781C7A225 /* Pods_Vimac.framework */; };
+		85CB5AA028EAA45900060664 /* AXSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 85CB5A9F28EAA45900060664 /* AXSwift */; };
 		ABBC36BE3AB1866C4D803D04 /* Pods_VimacTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3838C26CF2EE35337E477D6 /* Pods_VimacTests.framework */; };
 		DB9977DE63A7DFECC2D9CB88 /* Pods_VimacUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 85E207A8CB4C294752F7C738 /* Pods_VimacUITests.framework */; };
 		E204519925F388BC00CBFC7A /* AXManualAccessibilityActivator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E204519825F388BC00CBFC7A /* AXManualAccessibilityActivator.swift */; };
@@ -138,6 +139,7 @@
 		824743387EB077A984803D5C /* Pods-VimacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacTests.debug.xcconfig"; path = "Target Support Files/Pods-VimacTests/Pods-VimacTests.debug.xcconfig"; sourceTree = "<group>"; };
 		851BCE0628E77F33000E075C /* FIXME.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FIXME.md; sourceTree = "<group>"; };
 		8569BBD528EA462A003E1A77 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		85CB5A9E28EAA40D00060664 /* AXSwift_my */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = AXSwift_my; path = ../../Accessibility/AXSwift_my; sourceTree = "<group>"; };
 		85E207A8CB4C294752F7C738 /* Pods_VimacUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VimacUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A6BBF07B6655F54781C7A225 /* Pods_Vimac.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Vimac.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3D6841E02A20AE804E019B5 /* Pods-VimacTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacTests.release.xcconfig"; path = "Target Support Files/Pods-VimacTests/Pods-VimacTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -234,6 +236,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85CB5AA028EAA45900060664 /* AXSwift in Frameworks */,
 				E27776E3240B780D00488320 /* LaunchAtLogin.framework in Frameworks */,
 				285448C8DFA037E9228938B9 /* Pods_Vimac.framework in Frameworks */,
 			);
@@ -377,6 +380,7 @@
 		E26172172322968500E396CA = {
 			isa = PBXGroup;
 			children = (
+				85CB5A9E28EAA40D00060664 /* AXSwift_my */,
 				851BCE0528E77F18000E075C /* Doument */,
 				E27776E7240B784900488320 /* LaunchAtLogin.framework.dSYM */,
 				E26172222322968500E396CA /* ViMac-Swift */,
@@ -534,6 +538,9 @@
 			dependencies = (
 			);
 			name = Vimac;
+			packageProductDependencies = (
+				85CB5A9F28EAA45900060664 /* AXSwift */,
+			);
 			productName = "ViMac-Swift";
 			productReference = E26172202322968500E396CA /* Vimac.app */;
 			productType = "com.apple.product-type.application";
@@ -1204,6 +1211,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		85CB5A9F28EAA45900060664 /* AXSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AXSwift;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E26172182322968500E396CA /* Project object */;
 }

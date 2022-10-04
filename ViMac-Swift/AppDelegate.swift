@@ -256,6 +256,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             if self.modeCoordinator.openedMenu == menu {
                 self.modeCoordinator.openedMenu = nil
+                os_log("[openedMenu] set: nil")
                 self.modeCoordinator.deactivate()
             }
         })

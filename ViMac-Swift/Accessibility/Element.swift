@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 import AXSwift
 
 class Element {
@@ -22,12 +23,17 @@ class Element {
         let valuesOptional = try? uiElement.getMultipleAttributes([.size, .position, .role])
         
         guard let values = valuesOptional else {
+            os_log("[Element] init nil")
             return nil
         }
 
-        guard let size: NSSize = values[Attribute.size] as! NSSize? else { return nil }
-        guard let position: NSPoint = values[Attribute.position] as! NSPoint? else { return nil }
-        guard let role: String = values[Attribute.role] as! String? else { return nil }
+        guard let size = values[Attribute.size] as? CGSize,
+              let position = values[Attribute.position] as? CGPoint,
+              let role = values[Attribute.role] as? String else 
+        { 
+            os_log("[Element] init nil")
+            return nil 
+        }
         let frame = NSRect(origin: position, size: size)
 
         let actions = try? uiElement.actionsAsStrings()
@@ -44,5 +50,26 @@ class Element {
     
     func setClippedFrame(_ clippedFrame: NSRect) {
         self.clippedFrame = clippedFrame
+    }
+}
+
+
+extension Element: CustomStringConvertible {
+    var description: String {
+        let roleStr = String(format: "role: %-14s", role.cstr!)
+        let actionsStr = actions.joined(separator: ", ")
+        return "\(frame) \(roleStr) [\(actionsStr)]"
+    }
+}
+
+extension CGRect: CustomStringConvertible {
+    public var description: String {
+        String(format: "r:(%5.f, %5.f, %4.f, %4.f)", origin.x, origin.y, size.width, size.height)
+    }
+}
+
+extension String {
+    var cstr: UnsafePointer<CChar>? {
+        (self as NSString).utf8String
     }
 }

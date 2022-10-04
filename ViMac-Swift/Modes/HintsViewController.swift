@@ -173,31 +173,6 @@ class HintsViewController: NSViewController {
         os_log("roleCounts: %@", info)
     }
     
-    func shape(with hintView: HintView) -> CAShapeLayer? {
-        let shape = CAShapeLayer()
-        guard let frame = elementFrame(hintView.associatedElement) else {
-            os_log("frame is nil of element: %@", hintView.associatedElement.description)
-            return nil
-        }
-        shape.frame = frame
-        let bounds = shape.bounds
-        let path = CGMutablePath()
-        path.addLines(between: [
-            .zero,
-            CGPoint(x: bounds.origin.x, y: bounds.maxY),
-            CGPoint(x: bounds.maxX, y: bounds.maxY),
-            CGPoint(x: bounds.maxX, y: bounds.origin.y),
-            .zero
-        ])
-        shape.path = path
-        shape.lineWidth = 0.8
-        //            shape.lineDashPattern = [2, 4]
-        shape.strokeColor = NSColor.red.cgColor
-        shape.backgroundColor = nil
-        shape.fillColor = nil
-        return shape
-    }
-    
     func switchShowHelp(with info: String, forceOn: Bool = false) {
         if forceOn || helpView.isHidden {
             let fontSize: CGFloat = 12

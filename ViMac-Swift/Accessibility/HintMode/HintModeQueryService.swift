@@ -166,25 +166,23 @@ extension String {
         case "AXApplication"        : return "A"
         case "AXButton"             : return "B"
         case "AXCheckBox"           : return "C"
-        case "AXDisclosureTriangle" : return "D"
+        case "AXDisclosureTriangle" : return "D" // 
         case "AXCell"               : return "E"
         case "AXTextField"          : return "F"
-        case "AXGroup"              : return "G"
-            
-        case "AXImage"              : return "I" // x
+        case "AXGroup"              : return "G" // Logseq: 代码块
+        case "AXMenuItem"           : return "I"
         case "AXScrollArea"         : return "J"
             
         case "AXLink"               : return "L"
         case "AXMenuBarItem"        : return "M"
-            
+        case "AXMenuButton"         : return "N"
         case "AXOutline"            : return "O"
         case "AXPopUpButton"        : return "P"
         case "AXRow"                : return "Q"
         case "AXRadioButton"        : return "R"
         case "AXStaticText"         : return "S"
         case "AXTextArea"           : return "T"
-        case "AXUnknown"            : return "U"
-            
+        
         case "AXWindow"             : return "W" // x
             
             
@@ -192,7 +190,7 @@ extension String {
         case "AXBrowser"            : return "BU"
         
         case "AXColumn"             : return "CN"
-        case "AXComboBox"           : return "CO"
+        case "AXComboBox"           : return "CO" // FreeFileSync
         case "AXColorWell"          : return "CW"
             
         case "AXDrawer"             : return "DR"
@@ -203,17 +201,17 @@ extension String {
         case "AXHandle"             : return "HA"
         case "AXHelpTag"            : return "HT"
         
-        case "AXIncrementor"        : return "IN"
+        case "AXImage"              : return "IM" // x
+        case "AXIncrementor"        : return "IN" // FreeFileSync
 
         case "AXLayoutArea"         : return "LA"
         case "AXLevelIndicator"     : return "LD"
         case "AXLayoutItem"         : return "LI"
-        case "AXList"               : return "LS"
+        case "AXList"               : return "LS" // VSC: x
             
         case "AXMatte"              : return "MA"
         case "AXMenuBar"            : return "MB"
-        case "AXMenuButton"         : return "ME"
-        case "AXMenuItem"           : return "MI"
+        
         case "AXMenu"               : return "MU"
             
         case "AXProgressIndicator"  : return "PI"
@@ -225,20 +223,22 @@ extension String {
        
         case "AXRuler"              : return "RU"
         
-        case "AXScrollBar"          : return "SB"
-        case "AXSplitGroup"         : return "SG"
+        case "AXScrollBar"          : return "SB" // 
+        case "AXSplitGroup"         : return "SG" // 
         case "AXSheet"              : return "SH"
         case "AXSlider"             : return "SL"
-        case "AXSplitter"           : return "SP"
+        case "AXSplitter"           : return "SP" // 分割窗口之间的调节线。Path Finder, Xcode
         case "AXSystemWide"         : return "SW"
         
         case "AXToolbar"            : return "TB"
-        case "AXTable"              : return "TE"
+        case "AXTable"              : return "TE" // 
         case "AXTabGroup"           : return "TG"
         
-        case "AXValueIndicator"     : return "VI"
+        case "AXValueIndicator"     : return "VI" // Path Finder: x
         
-        case "AXWebArea"            : return "WA"
+        case "AXUnknown"            : return "UK"
+            
+        case "AXWebArea"            : return "WA" // VSC: x
         default:
             print("unknow: \(self)")
             return "Z"

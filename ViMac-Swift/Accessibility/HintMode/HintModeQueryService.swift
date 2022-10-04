@@ -202,12 +202,12 @@ extension String {
         case "AXHelpTag"            : return "HT"
         
         case "AXImage"              : return "IM" // x
-        case "AXIncrementor"        : return "IN" // FreeFileSync
+        case "AXIncrementor"        : return "IN" // FreeFileSync, Xcode
 
         case "AXLayoutArea"         : return "LA"
         case "AXLevelIndicator"     : return "LD"
         case "AXLayoutItem"         : return "LI"
-        case "AXList"               : return "LS" // VSC: x
+        case "AXList"               : return "LS" // VSC; Xcode
             
         case "AXMatte"              : return "MA"
         case "AXMenuBar"            : return "MB"
@@ -223,18 +223,18 @@ extension String {
        
         case "AXRuler"              : return "RU"
         
-        case "AXScrollBar"          : return "SB" // 
-        case "AXSplitGroup"         : return "SG" // 
+        case "AXScrollBar"          : return "SB" // Xcode
+        case "AXSplitGroup"         : return "SG" // Xcode
         case "AXSheet"              : return "SH"
         case "AXSlider"             : return "SL"
         case "AXSplitter"           : return "SP" // 分割窗口之间的调节线。Path Finder, Xcode
         case "AXSystemWide"         : return "SW"
         
-        case "AXToolbar"            : return "TB"
-        case "AXTable"              : return "TE" // 
-        case "AXTabGroup"           : return "TG"
+        case "AXToolbar"            : return "TB" // Xcode
+        case "AXTable"              : return "TE" // Xcode
+        case "AXTabGroup"           : return "TG" // Xcode
         
-        case "AXValueIndicator"     : return "VI" // Path Finder: x
+        case "AXValueIndicator"     : return "VI" // Path Finder: x; Xcode: x
         
         case "AXUnknown"            : return "UK"
             

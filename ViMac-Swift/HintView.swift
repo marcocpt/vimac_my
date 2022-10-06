@@ -138,7 +138,7 @@ private extension HintView {
         shape.path = path
         shape.lineWidth = 0.8
 //        shape.lineDashPattern = [2, 4]
-        shape.strokeColor = NSColor.red.cgColor
+        shape.strokeColor = associatedElement.role.roleColor.cgColor
         shape.backgroundColor = nil
         shape.fillColor = nil
         return shape

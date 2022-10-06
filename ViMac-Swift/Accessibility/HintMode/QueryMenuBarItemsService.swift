@@ -26,7 +26,6 @@ class QueryMenuBarItemsService {
         guard let menuBarItems = menuBarItemsOptional else { return nil }
         
         return menuBarItems
-            .map({ Element.initialize(rawElement: $0) })
-            .compactMap({ $0 })
+            .compactMap { Element(rawElement: $0) }
     }
 }

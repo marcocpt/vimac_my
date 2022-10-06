@@ -105,8 +105,7 @@ class HintModeQueryService {
                 print(menuItemsOptional?.count)
                 let menuItems = menuItemsOptional ?? []
                 let menuItemElements = menuItems
-                    .map { Element.initialize(rawElement: $0) }
-                    .compactMap({ $0 })
+                    .compactMap { Element(rawElement: $0) }
                 print(menuItemElements)
                 event(.success(menuItemElements))
             })
@@ -242,6 +241,32 @@ extension String {
         default:
             print("unknow: \(self)")
             return "Z"
+        }
+    }
+    
+    var roleColor: NSColor {
+        switch self {
+        case "AXApplication"        : return .systemGreen
+        case "AXButton"             : return .systemBlue
+        case "AXCheckBox"           : return .systemOrange
+        case "AXDisclosureTriangle" : return .systemYellow
+        case "AXCell"               : return .systemBrown
+        case "AXTextField"          : return .systemPink
+        case "AXGroup"              : return .systemPurple
+        case "AXMenuItem"           : return .systemTeal
+        case "AXScrollArea"         : return .systemMint
+            
+        case "AXLink"               : return .systemGreen
+        case "AXMenuBarItem"        : return .systemBlue
+        case "AXMenuButton"         : return .systemOrange
+        case "AXOutline"            : return .systemYellow
+        case "AXPopUpButton"        : return .systemBrown
+        case "AXRow"                : return .systemPink    
+        case "AXRadioButton"        : return .systemPurple
+        case "AXStaticText"         : return .systemTeal
+        case "AXTextArea"           : return .systemMint
+            
+        default                     : return .systemRed
         }
     }
 }

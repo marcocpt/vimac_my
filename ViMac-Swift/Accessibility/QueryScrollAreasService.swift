@@ -64,7 +64,6 @@ class QueryScrollAreasService {
         }
         
         return rawElements
-            .map { Element.initialize(rawElement: $0) }
-            .compactMap({ $0 })
+            .compactMap { Element(rawElement: $0) }
     }
 }

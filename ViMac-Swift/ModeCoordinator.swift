@@ -186,7 +186,7 @@ class ModeCoordinator {
         }
         
         // in addition to querying for useful attributes, it also tests for death of opened menu since it may no longer exist
-        return Element.initialize(rawElement: e)
+        return Element(rawElement: e)
     }
     
     // fun fact, focusedWindow need not return "AXWindow"...
@@ -200,7 +200,7 @@ class ModeCoordinator {
         let axWindowOptional: UIElement? = try? axApp.attribute(.focusedWindow)
         guard let axWindow = axWindowOptional else { return nil }
         
-        return Element.initialize(rawElement: axWindow.element)
+        return Element(rawElement: axWindow.element)
     }
     
     func showPMFSurvey() {

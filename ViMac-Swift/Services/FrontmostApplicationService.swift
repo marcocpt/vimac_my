@@ -119,7 +119,7 @@ class FrontmostApplicationService {
             guard let app = appOptional else { return nil }
             let windowOptional: UIElement? = try? Application(app)?.attribute(Attribute.focusedWindow)
             guard let window = windowOptional else { return nil }
-            return Element.initialize(rawElement: window.element)
+            return Element(rawElement: window.element)
         }
     }
     
@@ -129,7 +129,7 @@ class FrontmostApplicationService {
             .map { notification in
                 let windowOptional: UIElement? = try? Application(forProcessID: notification.pid)?.attribute(Attribute.focusedWindow)
                 guard let window = windowOptional else { return nil }
-                return Element.initialize(rawElement: window.element)
+                return Element(rawElement: window.element)
             }
     }
     

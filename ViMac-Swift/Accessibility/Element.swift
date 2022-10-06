@@ -57,26 +57,27 @@ class Element {
             }()
 
             guard let role = values[.role] as? String else { 
-                os_log("❌ [Element] init role error!")
-                return nil 
+                throw ELError.roleNull
             }
             
             let newActions: [String]
             do {
                 newActions = try uiElement.actionsAsStrings()
             } catch {
-                os_log("⚠️ [Element] init actions failed: %@", error.localizedDescription)
+                os_log("⚠️ [Element] init actions failed of uiElement: %@, error: %@", uiElement.description, error.localizedDescription)
                 newActions = []
             }
             self.rawElement = rawElement
             self.frame = frame
             self.actions = newActions
             self.role = role
+            return
+        } catch ELError.roleNull {
+            os_log("❌ [Element] init failed of uiElement: %@, error: %@", uiElement.description, ELError.roleNull.rawValue)
         } catch {
-            os_log("❌ [Element] init error: %@", error.localizedDescription)
-            return nil
+            os_log("❌ [Element] init failed of uiElement: %@, error: %@", uiElement.description, error.localizedDescription)
         }
-        
+        return nil
     }
     
     func setClippedFrame(_ clippedFrame: NSRect) {
@@ -108,4 +109,8 @@ extension String {
     var cstr: UnsafePointer<CChar>? {
         (self as NSString).utf8String
     }
+}
+
+enum ELError: String,  Error {
+    case roleNull = "role is null"
 }

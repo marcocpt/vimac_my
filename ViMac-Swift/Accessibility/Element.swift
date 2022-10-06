@@ -83,6 +83,23 @@ class Element {
     func setClippedFrame(_ clippedFrame: NSRect) {
         self.clippedFrame = clippedFrame
     }
+    
+    var children: [Element] {
+        UIElement(rawElement).childrens.compactMap { Element(rawElement: $0.element) }
+    }
+        func children(recursionIndexs: [Int]) -> [Element] {
+        var c = children
+        for index in recursionIndexs {
+            guard index < c.count else { return [] }
+            c = c[index].children
+        }
+        return c
+    }
+    
+    var parent: Element? {
+        guard let raw = UIElement(rawElement).parent?.element else { return nil }
+        return Element(rawElement: raw)
+    }
 }
 
 

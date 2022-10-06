@@ -58,11 +58,14 @@ class ElementTree {
     }
     
     func query() -> [Element]? {
-        if rootId == nil { return nil }
+        guard let rootId = rootId,
+              let rootElement = elementsById[rootId]
+        else { return nil }
+        
         self.cachedHintableChildrenCountById = [:]
         
         var results: [Element] = []
-        var stack: [Element] = [elementsById[rootId!]!]
+        var stack: [Element] = [rootElement]
         
         while let element = stack.popLast() {
             if isHintable(element) {

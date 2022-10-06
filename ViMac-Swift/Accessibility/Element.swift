@@ -18,34 +18,65 @@ class Element {
     
     var clippedFrame: NSRect?
     
-    static func initialize(rawElement: AXUIElement) -> Element? {
+    private(set) lazy var ui = UIElement(rawElement)
+    
+    #if DEBUG
+    var title: String?
+    #endif
+    
+    init?(rawElement: AXUIElement) {
         let uiElement = UIElement.init(rawElement)
-        let valuesOptional = try? uiElement.getMultipleAttributes([.size, .position, .role])
-        
-        guard let values = valuesOptional else {
-            os_log("[Element] init nil")
+        do {
+            let attributes = [Attribute.size, .position, .role]
+            #if DEBUG
+            let debugAttr = [Attribute.description, .value, .title, .domID, .domClasses]
+            let newAttr = attributes + debugAttr
+            let values = try uiElement.getMultipleAttributes(newAttr)
+            title = values.filter { debugAttr.contains($0.0) }
+                .compactMap {
+                    if let a = $0.1 as? [String], !a.isEmpty {
+                        return a.description
+                    }
+                    if let s = $0.1 as? String, !s.isEmpty {
+                        return s
+                    }
+                    return nil
+                }
+                .joined(separator: " ")
+            #else
+            let values = try uiElement.getMultipleAttributes(attributes)
+            #endif
+            
+            let frame: CGRect = {
+                if let size = values[.size] as? CGSize,
+                   let position = values[.position] as? CGPoint
+                {
+                    return CGRect(origin: position, size: size)
+                }
+                return .null
+            }()
+
+            guard let role = values[.role] as? String else { 
+                os_log("❌ [Element] init role error!")
+                return nil 
+            }
+            
+            let newActions: [String]
+            do {
+                newActions = try uiElement.actionsAsStrings()
+            } catch {
+                os_log("⚠️ [Element] init actions failed: %@", error.localizedDescription)
+                newActions = []
+            }
+            self.rawElement = rawElement
+            self.frame = frame
+            self.actions = newActions
+            self.role = role
+        } catch {
+            os_log("❌ [Element] init error: %@", error.localizedDescription)
             return nil
         }
-
-        guard let size = values[Attribute.size] as? CGSize,
-              let position = values[Attribute.position] as? CGPoint,
-              let role = values[Attribute.role] as? String else 
-        { 
-            os_log("[Element] init nil")
-            return nil 
-        }
-        let frame = NSRect(origin: position, size: size)
-
-        let actions = try? uiElement.actionsAsStrings()
         
-        return Element.init(rawElement: rawElement, frame: frame, actions: actions ?? [], role: role)
-    }
-    
-    init(rawElement: AXUIElement, frame: NSRect, actions: [String], role: String) {
-        self.rawElement = rawElement
-        self.frame = frame
-        self.actions = actions
-        self.role = role
     }
     
     func setClippedFrame(_ clippedFrame: NSRect) {
@@ -58,6 +89,11 @@ extension Element: CustomStringConvertible {
     var description: String {
         let roleStr = String(format: "role: %-14s", role.cstr!)
         let actionsStr = actions.joined(separator: ", ")
+        #if DEBUG
+        if let title = title, !title.isEmpty {
+            return "\(frame) \(roleStr) [\(actionsStr)] - \(title)"
+        }
+        #endif
         return "\(frame) \(roleStr) [\(actionsStr)]"
     }
 }

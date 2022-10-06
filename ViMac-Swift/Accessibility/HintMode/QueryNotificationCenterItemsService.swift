@@ -22,8 +22,7 @@ class QueryNotificationCenterItemsService {
         let windowChildrenUnflattened = windows.map({ actionableChildren($0.element) })
         let windowChildren = Array(windowChildrenUnflattened.joined())
         return windowChildren
-            .map { Element.initialize(rawElement: $0) }
-            .compactMap({ $0 })
+            .compactMap { Element(rawElement: $0) }
     }
     
     func actionableChildren(_ element: AXUIElement) -> [AXUIElement] {

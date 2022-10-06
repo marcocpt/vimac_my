@@ -848,9 +848,7 @@ class QueryHintableWindowsService {
             if let axApp = Application(forProcessID: app.processIdentifier) {
                 if let axWindows = try? axApp.windows() {
                     let elements = axWindows
-                        .map({ $0.element })
-                        .map({ Element.initialize(rawElement: $0) })
-                        .compactMap({ $0 })
+                        .compactMap { Element(rawElement: $0.element) }
                     axWindowsByPid[app.processIdentifier] = elements
                 }
             }

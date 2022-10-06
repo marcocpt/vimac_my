@@ -105,8 +105,7 @@ class HintModeQueryService {
                 print(menuItemsOptional?.count)
                 let menuItems = menuItemsOptional ?? []
                 let menuItemElements = menuItems
-                    .map { Element.initialize(rawElement: $0) }
-                    .compactMap({ $0 })
+                    .compactMap { Element(rawElement: $0) }
                 print(menuItemElements)
                 event(.success(menuItemElements))
             })

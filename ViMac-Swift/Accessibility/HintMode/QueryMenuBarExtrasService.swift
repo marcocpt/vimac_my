@@ -32,7 +32,6 @@ class QueryMenuBarExtrasService {
         let menubarItems = Array(menubarItemsUnflattened.joined())
         
         return menubarItems
-            .map({ Element.initialize(rawElement: $0) })
-            .compactMap({ $0 })
+            .compactMap { Element(rawElement: $0) }
     }
 }

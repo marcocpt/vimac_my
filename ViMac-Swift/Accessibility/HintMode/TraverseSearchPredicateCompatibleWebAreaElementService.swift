@@ -98,8 +98,7 @@ class TraverseSearchPredicateCompatibleWebAreaElementService : TraverseElementSe
         if multiSearchKeyQueryMatches > 0 {
             let rawElements: [AXUIElement]? = try UIElement(element.rawElement).parameterizedAttribute("AXUIElementsForSearchPredicate", param: multiSearchKeyQuery)
             let elements = rawElements?
-                .map({ Element.initialize(rawElement: $0) })
-                .compactMap({ $0 })
+                .compactMap { Element(rawElement: $0) }
             return elements
         }
         
@@ -115,8 +114,7 @@ class TraverseSearchPredicateCompatibleWebAreaElementService : TraverseElementSe
         let uniqueElements = elements.uniqued()
         
         return uniqueElements
-            .map({ Element.initialize(rawElement: $0) })
-            .compactMap({ $0 })
+            .compactMap { Element(rawElement: $0) }
     }
 }
 

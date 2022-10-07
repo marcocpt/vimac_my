@@ -13,6 +13,10 @@
 - [ ] [FIXME_LS2] : 行末尾点击编辑行
 - [ ] [FIXME_LS3] : 弹出设置后，仍然显示下面试图 Element
 
+### Tower
+
+- [x] [FIXME_TO1](x-source-tag://FIXME_TO1) : In `CTWorkingCopyOutlineView`, `NSOutlineRow` contains an `AXChekckBox`, but clicking on `AXChekckBox` does not select the row
+
 ## HelpView
 
 - [X] [FIXME_HEV1](x-source-tag://FIXME_HEV1) : 快速切换状态时，延时显示错误

@@ -113,8 +113,10 @@ class ElementTree {
         return actions.count > 0
     }
     
+    /// - Tag: FIXME_TO1
     private func isRowWithoutHintableChildren(_ element: Element) -> Bool {
-         element.role == "AXRow" && hintableChildrenCount(element) == 0
+        /// - Tag: FIXME_TO1
+        element.role == "AXRow" // && hintableChildrenCount(element) == 0 
     }
     
     private func hintableChildrenCount(_ element: Element) -> Int {

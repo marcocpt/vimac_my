@@ -6,8 +6,10 @@
 
 ### Logseq
 
-- [ ] [FIXME_LS1] : 标签元素 `#Swift` 
-    - 在 `ElementTree.query()` 中没有递归到
+- [x] [FIXME_LS1](x-source-tag://FIXME_LS1) : [[标签元素]] `#Swift` 
+    - ~~在 `ElementTree.query()` 中没有递归到~~
+    - 网页类 app 会调用 `TraverseSearchPredicateCompatibleWebAreaElementService` 中的方法进行遍历
+    - [[标签元素]] 为 `AXStaticText`，需在 `searchKeys` 中添加 `AXStaticTextSearchKey`
 - [ ] [FIXME_LS2] : 行末尾点击编辑行
 - [ ] [FIXME_LS3] : 弹出设置后，仍然显示下面试图 Element
 

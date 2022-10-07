@@ -87,7 +87,15 @@ class ElementTree {
     }
     
     private func isHintable(_ element: Element) -> Bool {
-        if element.role == "AXWindow" || element.role == "AXScrollArea" {
+        if element.role == "AXStaticText"  { 
+            if let bundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier,
+               AppCustomization(rawValue: bundleID) != nil
+            {
+            return true
+            }
+        } else if element.role == "AXScrollArea" || element.role == "AXTextArea" {
+            return true
+        } else if element.role == "AXWindow" {
             return false
         }
         

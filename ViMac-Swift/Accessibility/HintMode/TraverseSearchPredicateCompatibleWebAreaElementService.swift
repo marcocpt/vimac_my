@@ -67,11 +67,13 @@ class TraverseSearchPredicateCompatibleWebAreaElementService : TraverseElementSe
         return element.frame
     }
     
-    // use search predicates to query for web area children elements
-    // Note: There is a difference in implementation of search keys for Chromium and WebKit,
-    // hence the need to have different approaches "one-shot with all search keys" (WebKit) vs "multiple-shots with a single search key" (Chromium)
-    // Chromium has fixed their implementation to act like WebKit, but current versions (~90.0) need this workaround.
-    // https://chromium-review.googlesource.com/c/chromium/src/+/2773520
+    /// use search predicates to query for web area children elements
+    /// Note: There is a difference in implementation of search keys for Chromium and WebKit,
+    /// hence the need to have different approaches "one-shot with all search keys" (WebKit) vs "multiple-shots with a single search key" (Chromium)
+    /// Chromium has fixed their implementation to act like WebKit, but current versions (~90.0) need this workaround.
+    /// https://chromium-review.googlesource.com/c/chromium/src/+/2773520
+    /// 
+    /// - Tag: FIXME_LS1
     private func getRecursiveChildrenThroughSearchPredicate() throws -> [Element]? {
         let query: [String: Any] = [
             "AXDirection": "AXDirectionNext",
@@ -80,7 +82,7 @@ class TraverseSearchPredicateCompatibleWebAreaElementService : TraverseElementSe
             "AXVisibleOnly": true
         ]
         
-        let searchKeys = [
+        var searchKeys = [
             "AXButtonSearchKey",
             "AXCheckBoxSearchKey",
             "AXControlSearchKey",
@@ -89,6 +91,10 @@ class TraverseSearchPredicateCompatibleWebAreaElementService : TraverseElementSe
             "AXRadioGroupSearchKey",
             "AXTextFieldSearchKey"
         ]
+        /// - Tag: FIXME_LS1
+        if let bundleID = app.bundleIdentifier ,AppCustomization(rawValue: bundleID) != nil {
+            searchKeys.append("AXStaticTextSearchKey")
+        }
         
         var multiSearchKeyQuery = query
         multiSearchKeyQuery["AXSearchKey"] = searchKeys

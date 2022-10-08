@@ -11,6 +11,7 @@ import Cocoa
 class ElementTree {
     private var elementsById: [AXUIElement : Element]
     private var childrenById: [AXUIElement : [AXUIElement]]
+    private var app: Element?
     private var rootId: AXUIElement?
     
     private var cachedHintableChildrenCountById: [AXUIElement : Int]?
@@ -19,6 +20,8 @@ class ElementTree {
         elementsById = [:]
         childrenById = [:]
     }
+    
+    private var appCustomization: AppCustomization?
     
     func insert(_ element: Element, parentId: AXUIElement?) -> Bool {
         let isRoot = parentId == nil
@@ -31,6 +34,7 @@ class ElementTree {
         if isRoot {
             if self.rootId != nil { return false }
             self.rootId = element.rawElement
+            app = element.parent
         }
 
         elementsById[element.rawElement] = element
@@ -67,7 +71,13 @@ class ElementTree {
         var results: [Element] = []
         var stack: [Element] = [rootElement]
         
+        if let bundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier {
+            appCustomization = AppCustomization(rawValue: bundleID)
+        }
+        
         while let element = stack.popLast() {
+            stack.append(contentsOf: customizationIgnored(element))
+            
             if isHintable(element) {
                 results.append(element)
             }
@@ -88,10 +98,8 @@ class ElementTree {
     
     private func isHintable(_ element: Element) -> Bool {
         if element.role == "AXStaticText"  { 
-            if let bundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier,
-               AppCustomization(rawValue: bundleID) != nil
-            {
-            return true
+            if let app = appCustomization, AppCustomization.needStaticText.contains(app) {
+                return true
             }
         } else if element.role == "AXScrollArea" || element.role == "AXTextArea" {
             return true
@@ -135,5 +143,42 @@ class ElementTree {
         
         self.cachedHintableChildrenCountById![element.rawElement] = hintableChildrenCount
         return hintableChildrenCount
+    }
+    
+    private func customizationIgnored(_ element: Element) -> [Element] {
+        if appCustomization == .xcode {
+            return customizationXcodeIgnored(element)
+        }
+        return []
+    }
+    
+    /// - Tag: FIXME_XC1
+    private func customizationXcodeIgnored(_ element: Element)  -> [Element] {
+        var r = [Element]()
+        if element.role == "AXGroup" {
+            if let id: String = try? element.ui.attribute(.identifier),
+               id == "debug area",
+               let app = app {
+                let frame = element.frame
+                // Show the Variables View
+                let x1 = Float(frame.maxX - 47 + 10)
+                let y1 = Float(frame.maxY - 25 + 10)
+                var xElement: AXUIElement?
+                var error = _AXUIElementCopyElementAtPositionIncludeIgnored(app.rawElement, x1, y1, &xElement, true)
+                if error == .success, let xElement = xElement,
+                    let element = Element(rawElement: xElement) {
+                    r.append(element)
+                }
+                
+                // Show the Console
+                let x2 = Float(frame.maxX - 26 + 10)
+                error = _AXUIElementCopyElementAtPositionIncludeIgnored(app.rawElement, x2, y1, &xElement, true)
+                if error == .success, let xElement = xElement,
+                   let element = Element(rawElement: xElement) {
+                   r.append(element)
+               }
+            }
+        }
+        return r
     }
 }

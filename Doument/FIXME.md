@@ -17,6 +17,11 @@
 
 - [x] [FIXME_TO1](x-source-tag://FIXME_TO1) : In `CTWorkingCopyOutlineView`, `NSOutlineRow` contains an `AXChekckBox`, but clicking on `AXChekckBox` does not select the row
 
+### Xcode
+
+- [x] [FIXME_XC1](x-source-tag://FIXME_XC1) : "Show the Variables View" and "Show the Console" 不能选中
+    - 使用 Accessibility Inspector 查看为 ignored element，使用私有函数查找
+
 ## HelpView
 
 - [X] [FIXME_HEV1](x-source-tag://FIXME_HEV1) : 快速切换状态时，延时显示错误

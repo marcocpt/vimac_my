@@ -140,6 +140,7 @@
 		824743387EB077A984803D5C /* Pods-VimacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VimacTests.debug.xcconfig"; path = "Target Support Files/Pods-VimacTests/Pods-VimacTests.debug.xcconfig"; sourceTree = "<group>"; };
 		851BCE0628E77F33000E075C /* FIXME.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = FIXME.md; sourceTree = "<group>"; };
 		8569BBD528EA462A003E1A77 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		85B0D4F628F15524002A3414 /* AXUIElementPriate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AXUIElementPriate.h; sourceTree = "<group>"; };
 		85B3FA4F28EEEF2100B4366D /* AXSwift_my */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = AXSwift_my; path = My/AXSwift_my; sourceTree = "<group>"; };
 		85B3FA5228EF92EF00B4366D /* AppCustomization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCustomization.swift; sourceTree = "<group>"; };
 		85E207A8CB4C294752F7C738 /* Pods_VimacUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VimacUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -285,6 +286,14 @@
 			path = Doument;
 			sourceTree = "<group>";
 		};
+		85B0D4F528F15509002A3414 /* Private */ = {
+			isa = PBXGroup;
+			children = (
+				85B0D4F628F15524002A3414 /* AXUIElementPriate.h */,
+			);
+			path = Private;
+			sourceTree = "<group>";
+		};
 		A714F2240DB82D97A12A79E9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -382,6 +391,7 @@
 		E26172172322968500E396CA = {
 			isa = PBXGroup;
 			children = (
+				85B0D4F528F15509002A3414 /* Private */,
 				851BCE0528E77F18000E075C /* Doument */,
 				E27776E7240B784900488320 /* LaunchAtLogin.framework.dSYM */,
 				E26172222322968500E396CA /* ViMac-Swift */,

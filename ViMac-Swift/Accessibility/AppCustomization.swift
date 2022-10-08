@@ -9,6 +9,13 @@
 import Foundation
 
 enum AppCustomization : String {
+    case alfredPreferences = "com.runningwithcrayons.Alfred-Preferences"
+    case ida = "com.hexrays.ida64"
     case logseq = "com.electron.logseq"
+    case pathFinder = "com.cocoatech.PathFinder"
+    case pdfExpertMac = "com.readdle.PDFExpert-Mac"
     case typora = "abnerworks.Typora"
+    case xcode = "com.apple.dt.Xcode"
+    
+    static let needStaticText = [AppCustomization.ida, .logseq, .pathFinder, .pdfExpertMac, .typora]
 }

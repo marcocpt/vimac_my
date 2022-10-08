@@ -92,7 +92,10 @@ class TraverseSearchPredicateCompatibleWebAreaElementService : TraverseElementSe
             "AXTextFieldSearchKey"
         ]
         /// - Tag: FIXME_LS1
-        if let bundleID = app.bundleIdentifier ,AppCustomization(rawValue: bundleID) != nil {
+        if let bundleID = app.bundleIdentifier ,
+           let app = AppCustomization(rawValue: bundleID),
+           AppCustomization.needStaticText.contains(app)
+        {
             searchKeys.append("AXStaticTextSearchKey")
         }
         

@@ -7,7 +7,6 @@ target 'Vimac' do
 
   # Pods for ViMac-Swift
 
-  pod 'AXSwift', '~> 0.2'
   pod 'RxSwift', '~> 5'
   pod 'RxCocoa', '~> 5'
   pod 'MASShortcut'

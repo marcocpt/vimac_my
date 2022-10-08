@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 import AXSwift
 
 class HintsViewController: NSViewController {
@@ -36,6 +37,7 @@ class HintsViewController: NSViewController {
         self.typed = typed
         self.modifiers = modifiers
         super.init(nibName: nil, bundle: nil)
+        view.wantsLayer = true
     }
     
     required init?(coder: NSCoder) {
@@ -52,10 +54,19 @@ class HintsViewController: NSViewController {
         self.hintViews = hints
             .map { renderHint($0, modifiers: modifiers) }
             .compactMap({ $0 })
-
+        #if DEBUG
+        logHints()
+        for hintView in self.hintViews {
+            view.addSubview(hintView)
+            if let shape = hintView.shape {
+                view.layer?.addSublayer(shape)
+            }
+        }
+        #else
         for hintView in self.hintViews {
             self.view.addSubview(hintView)
         }
+        #endif
         
         helpView.isHidden = true
     }
@@ -71,9 +82,11 @@ class HintsViewController: NSViewController {
         self.typed = typed
         hintViews.forEach { hintView in
             hintView.isHidden = true
+            hintView.shape?.isHidden = true
             if hintView.hintTextView!.stringValue.starts(with: typed.uppercased()) {
                 hintView.updateTypedText(typed: typed)
                 hintView.isHidden = false
+                hintView.shape?.isHidden = false
             }
         }
     }
@@ -81,11 +94,15 @@ class HintsViewController: NSViewController {
     func rotateHints() {
         for hintView in hintViews {
             hintView.removeFromSuperview()
+            hintView.shape?.removeFromSuperlayer()
         }
         
         let shuffledHintViews = hintViews.shuffled()
         for hintView in shuffledHintViews {
             self.view.addSubview(hintView)
+            if let shape = hintView.shape {
+                view.layer?.addSublayer(shape)
+            }
         }
         self.hintViews = shuffledHintViews
     }
@@ -137,6 +154,23 @@ class HintsViewController: NSViewController {
     
     @objc func helpOff() {
         helpView.isHidden = true
+    }
+    
+    func logHints() {
+        var roleCounts = [String : Int]()
+        hints.forEach {
+            let role = $0.element.role
+            let key = String(format: "%-2s %@", role.roleKey.cstr!, role)
+            if let count = roleCounts[key] {
+                roleCounts[key] = count + 1
+            } else {
+                roleCounts[key] = 1
+            }
+        }
+        let info = roleCounts
+            .sorted { $0.1 > $1.1 }
+            .map { String(format: "%-3d %@", $0.1, $0.0) }
+        os_log("roleCounts: %@", info)
     }
     
     func switchShowHelp(with info: String, forceOn: Bool = false) {

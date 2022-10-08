@@ -72,7 +72,6 @@ class TraverseGenericElementService : TraverseElementService {
             return try UIElement(element.rawElement).attribute(.children)
         }()
         return rawElements?
-            .map { Element.initialize(rawElement: $0) }
-            .compactMap({ $0 })
+            .compactMap { Element(rawElement: $0) }
     }
 }

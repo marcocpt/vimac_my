@@ -101,6 +101,8 @@ class ElementTree {
             if let app = appCustomization, AppCustomization.needStaticText.contains(app) {
                 return true
             }
+        } else if element.role == "AXUnknown" { // HotKey: Alfred-Preferences, Dash
+            return true
         } else if element.role == "AXScrollArea" || element.role == "AXTextArea" {
             return true
         } else if element.role == "AXWindow" {

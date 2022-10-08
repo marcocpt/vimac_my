@@ -6,10 +6,21 @@
 
 ### Logseq
 
-- [ ] [FIXME_LS1] : 标签元素 `#Swift` 
-    - 在 `ElementTree.query()` 中没有递归到
+- [x] [FIXME_LS1](x-source-tag://FIXME_LS1) : [[标签元素]] `#Swift` 
+    - ~~在 `ElementTree.query()` 中没有递归到~~
+    - 网页类 app 会调用 `TraverseSearchPredicateCompatibleWebAreaElementService` 中的方法进行遍历
+    - [[标签元素]] 为 `AXStaticText`，需在 `searchKeys` 中添加 `AXStaticTextSearchKey`
 - [ ] [FIXME_LS2] : 行末尾点击编辑行
 - [ ] [FIXME_LS3] : 弹出设置后，仍然显示下面试图 Element
+
+### Tower
+
+- [x] [FIXME_TO1](x-source-tag://FIXME_TO1) : In `CTWorkingCopyOutlineView`, `NSOutlineRow` contains an `AXChekckBox`, but clicking on `AXChekckBox` does not select the row
+
+### Xcode
+
+- [x] [FIXME_XC1](x-source-tag://FIXME_XC1) : "Show the Variables View" and "Show the Console" 不能选中
+    - 使用 Accessibility Inspector 查看为 ignored element，使用私有函数查找
 
 ## HelpView
 

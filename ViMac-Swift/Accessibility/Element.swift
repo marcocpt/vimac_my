@@ -25,7 +25,7 @@ class Element {
     #endif
     
     init?(rawElement: AXUIElement) {
-        let uiElement = UIElement.init(rawElement)
+        let uiElement = UIElement(rawElement)
         do {
             let attributes = [Attribute.size, .position, .role]
             #if DEBUG

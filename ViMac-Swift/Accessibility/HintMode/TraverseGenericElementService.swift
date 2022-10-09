@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 import AXSwift
 
 class TraverseGenericElementService : TraverseElementService {
@@ -66,12 +67,82 @@ class TraverseGenericElementService : TraverseElementService {
 
     private func getChildren(_ element: Element) throws -> [Element]? {
         let rawElements: [AXUIElement]? = try {
-            if element.role == "AXTable" || element.role == "AXOutline" {
-                return try UIElement(element.rawElement).attribute(.visibleRows)
-            }
+            if let r = try listChildren(element) { return r }
+            
             return try UIElement(element.rawElement).attribute(.children)
         }()
         return rawElements?
             .compactMap { Element(rawElement: $0) }
+    }
+    
+    private func listChildren(_ element: Element) throws -> [AXUIElement]? {
+        guard element.role == "AXTable" || element.role == "AXOutline" else { return nil }
+        if let r: [AXUIElement] = try? UIElement(element.rawElement).attribute(.visibleRows),
+           !r.isEmpty
+        {
+            return r
+        }
+        
+        /// [[IDA]]:  "AXTable" not have "AXVisibleRows" and children is too much!
+        return try scanRowChildren(element)
+    }
+    
+    private func scanRowChildren(_ element: Element) throws -> [AXUIElement]? {
+        os_log("⚠️ [scanRowChildren] start at element: %@", element.description)
+        guard let root = windowElement.parent else { return nil }
+        let frame = element.frame
+        let minY = frame.minY
+        var deltaY = frame.height / 2
+        var point = frame.center
+        var r = [AXUIElement]()
+        var delta: CGFloat = 0
+        repeat {
+            if let uiElement = try? root.ui.elementForRoot(at: point),
+               uiElement.element != element.rawElement,
+               let row1Frame: CGRect = try? uiElement.attribute(.frame),
+               frame.contains(row1Frame)
+            {
+                r.append(uiElement.element)
+                delta = row1Frame.height
+                break
+            }
+            deltaY /= 2
+            point.y -= deltaY
+        } while point.y - minY > 5
+        
+        if r.isEmpty { return nil }
+        
+        point.y += delta
+        let maxY = frame.maxY
+        
+        repeat {
+            guard let uiElement = try? root.ui.elementForRoot(at: point),
+                  let rowFrame: CGRect = try? uiElement.attribute(.frame),
+                  frame.contains(rowFrame)
+            else { break }
+            
+            r.insert(uiElement.element, at: 0)
+            point.y += rowFrame.height
+        } while point.y < maxY
+        
+        point.y = frame.origin.y + deltaY
+    
+        repeat {
+            guard let uiElement = try? root.ui.elementForRoot(at: point),
+                  let rowFrame: CGRect = try? uiElement.attribute(.frame),
+                  frame.contains(rowFrame)
+            else { break }
+            
+            r.append(uiElement.element)
+            point.y -= rowFrame.height
+        } while point.y > minY
+        
+        return r
+    }
+}
+
+extension CGRect {
+    var center: CGPoint {
+        CGPoint(x: midX, y: midY)
     }
 }

@@ -4,6 +4,12 @@
 
 - [ ] [FIXME_E1] : [[Tower]] Working Copy 中的文件列表表格
 
+### IDA
+
+- [x] [FIXME_IA1](x-source-tag://FIXME_IA1) : 函数框无法选择，添加 `AXStaticText` 后也不行，函数不过滤还卡 3 秒
+    - "AXTable" not have "AXVisibleRows" and children is too much! 
+    - 使用行遍历算法
+
 ### Logseq
 
 - [x] [FIXME_LS1](x-source-tag://FIXME_LS1) : [[标签元素]] `#Swift` 

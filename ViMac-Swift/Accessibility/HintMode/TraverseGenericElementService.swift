@@ -68,11 +68,21 @@ class TraverseGenericElementService : TraverseElementService {
     private func getChildren(_ element: Element) throws -> [Element]? {
         let rawElements: [AXUIElement]? = try {
             if let r = try listChildren(element) { return r }
-            
+            if let r = try tabGroupChildren(element) { return r }
             return try UIElement(element.rawElement).attribute(.children)
         }()
         return rawElements?
             .compactMap { Element(rawElement: $0) }
+    }
+    
+    /// - Tag: FIXME_CL2
+    private func tabGroupChildren(_ element: Element) throws -> [AXUIElement]? {
+        guard element.role == "AXTabGroup" else { return nil }
+        
+        guard let r: [AXUIElement] = try? element.ui.attribute(.visibleChildren),
+              !r.isEmpty else { return nil }
+        
+        return r
     }
     
     private func listChildren(_ element: Element) throws -> [AXUIElement]? {

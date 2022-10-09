@@ -97,7 +97,10 @@ class ElementTree {
     }
     
     private func isHintable(_ element: Element) -> Bool {
-        if element.role == "AXStaticText"  { 
+        /// - Tag: FIXME_CL2 [[CLion]] 中没 Actions
+        if ["AXButton", "AXRadioButton", ].contains(element.role) {
+            return true
+        } else if element.role == "AXStaticText"  { 
             if let app = appCustomization, AppCustomization.needStaticText.contains(app) {
                 return true
             }

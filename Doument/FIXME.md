@@ -4,6 +4,13 @@
 
 - [ ] [FIXME_E1] : [[Tower]] Working Copy 中的文件列表表格
 
+### CLion
+
+- [ ] [FIXME_CL1] : 在副显示器上 y 坐标便宜了。`Accessibility Inspector` 也是。系统 BUG?
+- [x] [FIXME_CL2](x-source-tag://FIXME_CL2) : Debugger 区域工具栏无法选择
+    - `AXTabGroup` 中需要使用 `visibleChildren` 获取子元素，且获取的没有 `AXAction`
+- [ ] [FIXME_CL3] : 打开的文件右边的 "x" 无法选中
+
 ### IDA
 
 - [x] [FIXME_IA1](x-source-tag://FIXME_IA1) : 函数框无法选择，添加 `AXStaticText` 后也不行，函数不过滤还卡 3 秒

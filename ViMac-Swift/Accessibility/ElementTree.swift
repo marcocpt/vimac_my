@@ -102,6 +102,9 @@ class ElementTree {
                 return true
             }
         } else if element.role == "AXUnknown" { // HotKey: Alfred-Preferences, Dash
+            if appCustomization == .pathFinder {
+                return false
+            }
             return true
         } else if element.role == "AXScrollArea" || element.role == "AXTextArea" {
             return true

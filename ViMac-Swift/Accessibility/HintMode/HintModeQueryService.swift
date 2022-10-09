@@ -186,7 +186,7 @@ extension String {
         case "AXGroup"              : return "G" // Logseq: 代码块
         case "AXMenuItem"           : return "I"
         case "AXScrollArea"         : return "J"
-            
+        case "AXDockItem"           : return "K"
         case "AXLink"               : return "L"
         case "AXMenuBarItem"        : return "M"
         case "AXMenuButton"         : return "N"

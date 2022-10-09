@@ -55,14 +55,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if isDuplicateAppInstance() {
             NSApp.terminate(self)
             return
-        }
-        
-        let configuration = AnalyticsConfiguration(writeKey: "cjSicRrQ0dUgFkhmjDDur7974VfQKTlX")
-        configuration.trackApplicationLifecycleEvents = true // Enable this to record certain application events automatically!
-        configuration.recordScreenViews = true // Enable this to record screen views automatically!
+        }        
+        let configuration = AnalyticsConfiguration(writeKey: "")
+//        let configuration = AnalyticsConfiguration(writeKey: "cjSicRrQ0dUgFkhmjDDur7974VfQKTlX")
+        configuration.trackApplicationLifecycleEvents = false // Enable this to record certain application events automatically!
+        configuration.recordScreenViews = false // Enable this to record screen views automatically!
         Analytics.setup(with: configuration)
-        
-        reportConfiguration()
+        Analytics.shared().disable()
+//        
+//        reportConfiguration()
         
         setupPreferences()
         setupStatusItem()
@@ -82,7 +83,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         UIElement.globalMessagingTimeout = 1
         
-        self.checkForUpdatesInBackground()
+//        self.checkForUpdatesInBackground()
         self.modeCoordinator = ModeCoordinator()
         self.setupWindowEventAndShortcutObservables()
         self.setupAXAttributeObservables()

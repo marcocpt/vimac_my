@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 
 class ElementTree {
     private var elementsById: [AXUIElement : Element]
@@ -97,6 +98,12 @@ class ElementTree {
     }
     
     private func isHintable(_ element: Element) -> Bool {
+        let frame = element.frame
+        // [Xcode] `AXSplitter` width not zero, height is zero
+        if frame.size == .zero || frame.isNull {
+            os_log("[isHintable] frame is empty or null of element: %@", element.description)
+            return false
+        }
         /// - Tag: FIXME_CL2 [[CLion]] 中没 Actions
         if ["AXButton", "AXRadioButton", ].contains(element.role) {
             return true
@@ -109,7 +116,9 @@ class ElementTree {
                 return false
             }
             return true
-        } else if element.role == "AXScrollArea" || element.role == "AXTextArea" {
+        } else if element.role == "AXScrollArea" || element.role == "AXTextArea" ||
+                  element.role == "AXSplitter"
+        {
             return true
         } else if element.role == "AXWindow" {
             return false

@@ -64,7 +64,7 @@ class Element {
             do {
                 newActions = try uiElement.actionsAsStrings()
             } catch {
-                os_log("⚠️ [Element] init actions failed of uiElement: %@, error: %@", uiElement.description, error.localizedDescription)
+                os_log("⚠️ [Element] init actions nil of uiElement: %@, error: %@", uiElement.description, error.localizedDescription)
                 newActions = []
             }
             self.rawElement = rawElement
@@ -72,10 +72,14 @@ class Element {
             self.actions = newActions
             self.role = role
             return
-        } catch ELError.roleNull {
-            os_log("❌ [Element] init failed of uiElement: %@, error: %@", uiElement.description, ELError.roleNull.rawValue)
-        } catch {
-            os_log("❌ [Element] init failed of uiElement: %@, error: %@", uiElement.description, error.localizedDescription)
+        } catch let error {
+            let errorInfo: String
+            if let e = error as? ELError {
+                errorInfo = e.rawValue
+            } else {
+                errorInfo = error.localizedDescription
+            }
+            os_log("❌ [Element] init failed of uiElement: %@, title: %@, error: %@", uiElement.description, title ?? "", errorInfo)
         }
         return nil
     }
@@ -129,5 +133,6 @@ extension String {
 }
 
 enum ELError: String,  Error {
+    case frameNull = "frame is null or Empty"
     case roleNull = "role is null"
 }

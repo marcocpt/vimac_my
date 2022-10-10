@@ -25,6 +25,6 @@ class AlphabetHints {
                 hints.append(String(allowedCharacter) + hint)
             }
         }
-        return Array(hints[offset...offset+linkCount-1]).sorted().map { String($0.reversed()) }.map { $0.uppercased() }
+        return Array(hints[offset...offset+linkCount-1]).map { String($0.reversed()) }.sorted().map { $0.uppercased() }
     }
 }

@@ -175,13 +175,14 @@ class ElementTree {
         if element.role == "AXGroup" {
             if let id: String = try? element.ui.attribute(.identifier),
                id == "debug area",
-               let app = app {
+               let app = app 
+            {
                 let frame = element.frame
                 // Show the Variables View
                 let x1 = Float(frame.maxX - 47 + 10)
                 let y1 = Float(frame.maxY - 25 + 10)
                 var xElement: AXUIElement?
-                var error = _AXUIElementCopyElementAtPositionIncludeIgnored(app.rawElement, x1, y1, &xElement, true)
+                var error = AXUIElementCopyElementAtPosition(app.rawElement, x1, y1, &xElement)
                 if error == .success, let xElement = xElement,
                     let element = Element(rawElement: xElement) {
                     r.append(element)
@@ -189,7 +190,7 @@ class ElementTree {
                 
                 // Show the Console
                 let x2 = Float(frame.maxX - 26 + 10)
-                error = _AXUIElementCopyElementAtPositionIncludeIgnored(app.rawElement, x2, y1, &xElement, true)
+                error = AXUIElementCopyElementAtPosition(app.rawElement, x2, y1, &xElement)
                 if error == .success, let xElement = xElement,
                    let element = Element(rawElement: xElement) {
                    r.append(element)

@@ -196,6 +196,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .observeOn(axWorker)
                 .subscribe(onNext: { (_, currentApp) in
                     if let currentApp = currentApp {
+                        os_log("[AXManualAccessibilityActivator] will ativate curentApp: %@", currentApp.description)
                         AXManualAccessibilityActivator.activate(currentApp)
                     }
                 })
@@ -219,6 +220,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .observeOn(axWorker)
                 .subscribe(onNext: { (_, currentApp) in
                     if let currentApp = currentApp {
+                        os_log("[AXEnhancedUserInterfaceActivator] will ativate curentApp: %@", currentApp.description)
                         AXEnhancedUserInterfaceActivator.activate(currentApp)
                     }
                 })
@@ -252,7 +254,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
             
             self.modeCoordinator.openedMenu = menu
-            print("set openedMenu \(menu)")
+            os_log("[openedMenu] observeMenuOpened set: %@", menu as! CVarArg)
             if self.modeCoordinator.autoWithMenu {
                 let old = (self.modeCoordinator.modeController as? HintModeController)?.modifiers
                 self.modeCoordinator.deactivate()
@@ -265,7 +267,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             if self.modeCoordinator.openedMenu == menu {
                 self.modeCoordinator.openedMenu = nil
-                os_log("[openedMenu] set: nil")
+                os_log("[openedMenu] observeMenuClosed set: nil")
                 self.modeCoordinator.deactivate()
             }
         })

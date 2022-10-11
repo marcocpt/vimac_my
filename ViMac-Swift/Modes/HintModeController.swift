@@ -358,6 +358,7 @@ class HintModeController: ModeController {
         
         self.input = ""
         self.ui = HintModeUserInterface(window: self.window)
+        os_log("[ui] activate set ui: %@", ui.debugDescription)
         self.ui!.show()
         
         self.queryHints(
@@ -397,12 +398,16 @@ class HintModeController: ModeController {
         
         ui?.hide()
         self.ui = nil
+        os_log("[ui] deactivate set ui nil")
         
         self.delegate?.modeDeactivated(controller: self)
     }
     
     func onHintQuerySuccess(hints: [Hint]) {
-        guard let ui = ui else { return }
+        guard let ui = ui else { 
+            os_log("⚠️ [ui] onHintQuerySuccess ui is nil!")
+            return 
+        }
         
         self.hints = hints
         ui.setHints(hints: hints, modifiers: modifiers)

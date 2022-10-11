@@ -246,7 +246,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
             if self.modeCoordinator.currentApp != app {
                 self.modeCoordinator.currentApp = app
-                self.modeCoordinator.openedMenu = nil
             }
         }
         

@@ -33,22 +33,22 @@ class HintModeQueryService {
             .asObservable()
             .flatMap({ Observable.from($0) })
         
-        #if DEBUG
-        var typeCounts = [String: Int]()
-        let hints = elements.map {
-            let r = $0.role.roleKey
-            let currentCount: Int
-            if let count = typeCounts[r] { 
-                currentCount = count + 1
-            } else {
-                currentCount = 10
-            }
-            typeCounts[r] = currentCount
-            return Hint(element: $0, text: "\(r)\(currentCount)")
-        }
-        #else
+//        #if DEBUG
+//        var typeCounts = [String: Int]()
+//        let hints = elements.map {
+//            let r = $0.role.roleKey
+//            let currentCount: Int
+//            if let count = typeCounts[r] { 
+//                currentCount = count + 1
+//            } else {
+//                currentCount = 10
+//            }
+//            typeCounts[r] = currentCount
+//            return Hint(element: $0, text: "\(r)\(currentCount)")
+//        }
+//        #else
         let hints = Observable.zip(elements, hintStrings).map { Hint(element: $0, text: $1) }
-        #endif
+//        #endif
         return hints
     }
     
@@ -76,11 +76,11 @@ class HintModeQueryService {
         }
         
         return Utils.eagerConcat(observables: [
+            Utils.singleToObservable(single: dockElements()),
             menuBarElements,
             Utils.singleToObservable(single: queryMenuBarExtrasSingle()),
             Utils.singleToObservable(single: queryNotificationCenterSingle()),
-            windowElements,
-            Utils.singleToObservable(single: dockElements())
+            windowElements
         ])
     }
     
@@ -88,8 +88,7 @@ class HintModeQueryService {
         return Single.create(subscribe: { event in
             let thread = Thread.init(block: {
                 let service = QueryWindowService.init(app: app, window: window)
-                let elements = try? service.perform()
-                event(.success(elements ?? []))
+                event(.success(service.perform()))
             })
             thread.start()
             return Disposables.create {
@@ -101,13 +100,10 @@ class HintModeQueryService {
     private func queryOpenedMenuSingle(menu: Element) -> Single<[Element]> {
         return Single.create(subscribe: { event in
             let thread = Thread.init(block: {
-                print(menu.role)
                 let menuItemsOptional: [AXUIElement]? = try? UIElement(menu.rawElement).attribute(.children)
-                print(menuItemsOptional?.count)
                 let menuItems = menuItemsOptional ?? []
                 let menuItemElements = menuItems
                     .compactMap { Element(rawElement: $0) }
-                print(menuItemElements)
                 event(.success(menuItemElements))
             })
             thread.start()
@@ -178,23 +174,23 @@ extension String {
     var roleKey: String {
         switch self {
         case "AXApplication"        : return "A"
-        case "AXButton"             : return "B"
-        case "AXCheckBox"           : return "C"
-        case "AXDisclosureTriangle" : return "D" // 
+        case "AXButton"             : return "B" // 2
+        case "AXCheckBox"           : return "C" // 2
+        case "AXDisclosureTriangle" : return "D" // 2
         case "AXCell"               : return "E"
         case "AXTextField"          : return "F"
         case "AXGroup"              : return "G" // Logseq: 代码块
-        case "AXMenuItem"           : return "I"
+        case "AXMenuItem"           : return "I" //
         case "AXScrollArea"         : return "J"
-            
-        case "AXLink"               : return "L"
-        case "AXMenuBarItem"        : return "M"
+        case "AXDockItem"           : return "K" // 2
+        case "AXLink"               : return "L" // 2
+        case "AXMenuBarItem"        : return "M" // 2
         case "AXMenuButton"         : return "N"
         case "AXOutline"            : return "O"
-        case "AXPopUpButton"        : return "P"
-        case "AXRow"                : return "Q"
-        case "AXRadioButton"        : return "R"
-        case "AXStaticText"         : return "S"
+        case "AXPopUpButton"        : return "P" // 2
+        case "AXRow"                : return "Q" // 2
+        case "AXRadioButton"        : return "R" // 2
+        case "AXStaticText"         : return "S" // 2
         case "AXTextArea"           : return "T"
         
         case "AXWindow"             : return "W" // x

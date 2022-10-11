@@ -132,8 +132,8 @@ class HintsViewController: NSViewController {
             let y = elementCenter.y - viewSize.height
             return NSPoint( x: x < 0 ? 0 : x, y: y < 0 ? 0 : y)
         }()
-
-        if hintOrigin.x.isNaN || hintOrigin.y.isNaN {
+        // Terminating app due to uncaught exception 'NSInternalInconsistencyException', reason: '<Vimac.HintView: 0x7fa8229255e0>: invalid parameter not satisfying: isfinite(newOrigin.x)'
+        guard hintOrigin.x.isFinite, hintOrigin.y.isFinite else {
             return nil
         }
 

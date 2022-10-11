@@ -50,19 +50,20 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         super.init()
     }
-
+    /// - Tag: FIXME_M4
     func applicationDidFinishLaunching(_ aNotification: Notification) {        
         if isDuplicateAppInstance() {
             NSApp.terminate(self)
             return
-        }
-        
-        let configuration = AnalyticsConfiguration(writeKey: "cjSicRrQ0dUgFkhmjDDur7974VfQKTlX")
-        configuration.trackApplicationLifecycleEvents = true // Enable this to record certain application events automatically!
-        configuration.recordScreenViews = true // Enable this to record screen views automatically!
+        }        
+        let configuration = AnalyticsConfiguration(writeKey: "")
+//        let configuration = AnalyticsConfiguration(writeKey: "cjSicRrQ0dUgFkhmjDDur7974VfQKTlX")
+        configuration.trackApplicationLifecycleEvents = false // Enable this to record certain application events automatically!
+        configuration.recordScreenViews = false // Enable this to record screen views automatically!
         Analytics.setup(with: configuration)
-        
-        reportConfiguration()
+        Analytics.shared().disable()
+//        
+//        reportConfiguration()
         
         setupPreferences()
         setupStatusItem()
@@ -75,6 +76,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             showPermissionRequestingWindow()
         }
+        /// - Tag: FIXME_M4
+        if self.modeCoordinator.currentApp == nil {
+            NSWorkspace.shared.notificationCenter.post(
+                name: NSWorkspace.didActivateApplicationNotification,
+                object: nil)
+        }
     }
         
     func onAXPermissionGranted() {
@@ -82,7 +89,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         UIElement.globalMessagingTimeout = 1
         
-        self.checkForUpdatesInBackground()
+//        self.checkForUpdatesInBackground()
         self.modeCoordinator = ModeCoordinator()
         self.setupWindowEventAndShortcutObservables()
         self.setupAXAttributeObservables()
@@ -195,6 +202,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .observeOn(axWorker)
                 .subscribe(onNext: { (_, currentApp) in
                     if let currentApp = currentApp {
+                        os_log("[AXManualAccessibilityActivator] will ativate curentApp: %@", currentApp.description)
                         AXManualAccessibilityActivator.activate(currentApp)
                     }
                 })
@@ -218,6 +226,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .observeOn(axWorker)
                 .subscribe(onNext: { (_, currentApp) in
                     if let currentApp = currentApp {
+                        os_log("[AXEnhancedUserInterfaceActivator] will ativate curentApp: %@", currentApp.description)
                         AXEnhancedUserInterfaceActivator.activate(currentApp)
                     }
                 })
@@ -243,7 +252,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
             if self.modeCoordinator.currentApp != app {
                 self.modeCoordinator.currentApp = app
-                self.modeCoordinator.openedMenu = nil
             }
         }
         
@@ -251,7 +259,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
             
             self.modeCoordinator.openedMenu = menu
-            print("set openedMenu \(menu)")
+            os_log("[openedMenu] observeMenuOpened set: %@", menu as! CVarArg)
             if self.modeCoordinator.autoWithMenu {
                 let old = (self.modeCoordinator.modeController as? HintModeController)?.modifiers
                 self.modeCoordinator.deactivate()
@@ -264,7 +272,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             if self.modeCoordinator.openedMenu == menu {
                 self.modeCoordinator.openedMenu = nil
-                os_log("[openedMenu] set: nil")
+                os_log("[openedMenu] observeMenuClosed set: nil")
                 self.modeCoordinator.deactivate()
             }
         })

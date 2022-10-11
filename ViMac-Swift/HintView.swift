@@ -136,7 +136,7 @@ private extension HintView {
             .zero
         ])
         shape.path = path
-        shape.lineWidth = 0.8
+        shape.lineWidth = 1.5
 //        shape.lineDashPattern = [2, 4]
         shape.strokeColor = associatedElement.role.roleColor.cgColor
         shape.backgroundColor = nil

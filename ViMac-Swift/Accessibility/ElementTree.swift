@@ -7,6 +7,7 @@
 //
 
 import Cocoa
+import os
 
 class ElementTree {
     private var elementsById: [AXUIElement : Element]
@@ -97,13 +98,27 @@ class ElementTree {
     }
     
     private func isHintable(_ element: Element) -> Bool {
-        if element.role == "AXStaticText"  { 
+        let frame = element.frame
+        // [Xcode] `AXSplitter` width not zero, height is zero
+        if frame.size == .zero || frame.isNull {
+            os_log("[isHintable] frame is empty or null of element: %@", element.description)
+            return false
+        }
+        /// - Tag: FIXME_CL2 [[CLion]] 中没 Actions
+        if ["AXButton", "AXRadioButton", ].contains(element.role) {
+            return true
+        } else if element.role == "AXStaticText"  { 
             if let app = appCustomization, AppCustomization.needStaticText.contains(app) {
                 return true
             }
         } else if element.role == "AXUnknown" { // HotKey: Alfred-Preferences, Dash
+            if appCustomization == .pathFinder {
+                return false
+            }
             return true
-        } else if element.role == "AXScrollArea" || element.role == "AXTextArea" {
+        } else if element.role == "AXScrollArea" || element.role == "AXTextArea" ||
+                  element.role == "AXSplitter"
+        {
             return true
         } else if element.role == "AXWindow" {
             return false
@@ -160,13 +175,14 @@ class ElementTree {
         if element.role == "AXGroup" {
             if let id: String = try? element.ui.attribute(.identifier),
                id == "debug area",
-               let app = app {
+               let app = app 
+            {
                 let frame = element.frame
                 // Show the Variables View
                 let x1 = Float(frame.maxX - 47 + 10)
                 let y1 = Float(frame.maxY - 25 + 10)
                 var xElement: AXUIElement?
-                var error = _AXUIElementCopyElementAtPositionIncludeIgnored(app.rawElement, x1, y1, &xElement, true)
+                var error = AXUIElementCopyElementAtPosition(app.rawElement, x1, y1, &xElement)
                 if error == .success, let xElement = xElement,
                     let element = Element(rawElement: xElement) {
                     r.append(element)
@@ -174,7 +190,7 @@ class ElementTree {
                 
                 // Show the Console
                 let x2 = Float(frame.maxX - 26 + 10)
-                error = _AXUIElementCopyElementAtPositionIncludeIgnored(app.rawElement, x2, y1, &xElement, true)
+                error = AXUIElementCopyElementAtPosition(app.rawElement, x2, y1, &xElement)
                 if error == .success, let xElement = xElement,
                    let element = Element(rawElement: xElement) {
                    r.append(element)

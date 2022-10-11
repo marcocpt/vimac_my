@@ -112,7 +112,7 @@ class ModeCoordinator {
             modeController.deactivate()
         }
         
-        guard let frontmostApp = NSWorkspace.shared.frontmostApplication,
+        guard let frontmostApp = currentApp,
             let focusedWindow = focusedWindow(app: frontmostApp) else {
             return
         }
@@ -140,11 +140,10 @@ class ModeCoordinator {
             modeController.deactivate()
         }
         
-        let app = NSWorkspace.shared.frontmostApplication
         let openedMenu = openedMenuElement()
-        let window = app.flatMap { focusedWindow(app: $0) }
+        let window = currentApp.flatMap { focusedWindow(app: $0) }
         
-        if let app = app {
+        if let app = currentApp {
             // the app crashes when talking to its own accessibility server
             let isTargetVimac = app.bundleIdentifier == Bundle.main.bundleIdentifier
             if isTargetVimac {
@@ -156,7 +155,7 @@ class ModeCoordinator {
         beforeModeActivation()
         
         Analytics.shared().track("Hint Mode Activated", properties: [
-            "Target Application": app?.bundleIdentifier as Any,
+            "Target Application": currentApp?.bundleIdentifier as Any,
             "Activation Mechanism": mechanism,
             "Root Element Role": openedMenu?.role ?? window?.role
         ])
@@ -164,7 +163,7 @@ class ModeCoordinator {
         let activationCount = UserDefaults.standard.integer(forKey: "hintModeActivationCount")
         UserDefaults.standard.set(activationCount + 1, forKey: "hintModeActivationCount")
         
-        modeController = HintModeController(app: app, window: window, menu: openedMenu, modifiers: modifiers)
+        modeController = HintModeController(app: currentApp, window: window, menu: openedMenu, modifiers: modifiers)
         modeController?.delegate = self
         modeController!.activate()
     }

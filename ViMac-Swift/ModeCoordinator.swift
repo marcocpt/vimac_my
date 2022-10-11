@@ -35,6 +35,7 @@ class ModeCoordinator {
     var currentApp: NSRunningApplication? {
         didSet {
             openedMenu = nil /// - Tag: FIXME_M1
+            os_log("[currentApp] set openedMenu nil, currentApp update: %@, ", currentApp?.description ?? "")
         }
     }
     
@@ -147,6 +148,7 @@ class ModeCoordinator {
             // the app crashes when talking to its own accessibility server
             let isTargetVimac = app.bundleIdentifier == Bundle.main.bundleIdentifier
             if isTargetVimac {
+                os_log("⚠️ isTargetVimac!")
                 return
             }
         }
@@ -181,9 +183,10 @@ class ModeCoordinator {
     
     func openedMenuElement() -> Element? {
         guard let e = openedMenu else {
-            os_log("[openedMenuElement] openedMenu is nil!")
+            os_log("[openedMenuElement][openedMenu] is nil!")
             return nil 
         }
+        os_log("[openedMenuElement][openedMenu] is: %@", e as! CVarArg)
         
         // in addition to querying for useful attributes, it also tests for death of opened menu since it may no longer exist
         return Element(rawElement: e)

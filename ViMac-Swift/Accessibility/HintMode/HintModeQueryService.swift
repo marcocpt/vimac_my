@@ -100,13 +100,10 @@ class HintModeQueryService {
     private func queryOpenedMenuSingle(menu: Element) -> Single<[Element]> {
         return Single.create(subscribe: { event in
             let thread = Thread.init(block: {
-                print(menu.role)
                 let menuItemsOptional: [AXUIElement]? = try? UIElement(menu.rawElement).attribute(.children)
-                print(menuItemsOptional?.count)
                 let menuItems = menuItemsOptional ?? []
                 let menuItemElements = menuItems
                     .compactMap { Element(rawElement: $0) }
-                print(menuItemElements)
                 event(.success(menuItemElements))
             })
             thread.start()

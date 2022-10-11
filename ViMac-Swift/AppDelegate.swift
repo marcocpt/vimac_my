@@ -50,7 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         super.init()
     }
-
+    /// - Tag: FIXME_M4
     func applicationDidFinishLaunching(_ aNotification: Notification) {        
         if isDuplicateAppInstance() {
             NSApp.terminate(self)
@@ -75,6 +75,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.onAXPermissionGranted()
             }
             showPermissionRequestingWindow()
+        }
+        /// - Tag: FIXME_M4
+        if self.modeCoordinator.currentApp == nil {
+            NSWorkspace.shared.notificationCenter.post(
+                name: NSWorkspace.didActivateApplicationNotification,
+                object: nil)
         }
     }
         
@@ -196,6 +202,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .observeOn(axWorker)
                 .subscribe(onNext: { (_, currentApp) in
                     if let currentApp = currentApp {
+                        os_log("[AXManualAccessibilityActivator] will ativate curentApp: %@", currentApp.description)
                         AXManualAccessibilityActivator.activate(currentApp)
                     }
                 })
@@ -219,6 +226,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 .observeOn(axWorker)
                 .subscribe(onNext: { (_, currentApp) in
                     if let currentApp = currentApp {
+                        os_log("[AXEnhancedUserInterfaceActivator] will ativate curentApp: %@", currentApp.description)
                         AXEnhancedUserInterfaceActivator.activate(currentApp)
                     }
                 })
@@ -244,7 +252,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
             if self.modeCoordinator.currentApp != app {
                 self.modeCoordinator.currentApp = app
-                self.modeCoordinator.openedMenu = nil
             }
         }
         
@@ -252,7 +259,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             guard let self = self else { return }
             
             self.modeCoordinator.openedMenu = menu
-            print("set openedMenu \(menu)")
+            os_log("[openedMenu] observeMenuOpened set: %@", menu as! CVarArg)
             if self.modeCoordinator.autoWithMenu {
                 let old = (self.modeCoordinator.modeController as? HintModeController)?.modifiers
                 self.modeCoordinator.deactivate()
@@ -265,7 +272,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             
             if self.modeCoordinator.openedMenu == menu {
                 self.modeCoordinator.openedMenu = nil
-                os_log("[openedMenu] set: nil")
+                os_log("[openedMenu] observeMenuClosed set: nil")
                 self.modeCoordinator.deactivate()
             }
         })

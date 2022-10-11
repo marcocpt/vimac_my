@@ -50,7 +50,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         
         super.init()
     }
-
+    /// - Tag: FIXME_M4
     func applicationDidFinishLaunching(_ aNotification: Notification) {        
         if isDuplicateAppInstance() {
             NSApp.terminate(self)
@@ -75,6 +75,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 self.onAXPermissionGranted()
             }
             showPermissionRequestingWindow()
+        }
+        /// - Tag: FIXME_M4
+        if self.modeCoordinator.currentApp == nil {
+            NSWorkspace.shared.notificationCenter.post(
+                name: NSWorkspace.didActivateApplicationNotification,
+                object: nil)
         }
     }
         

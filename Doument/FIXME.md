@@ -22,6 +22,10 @@
     - "AXTable" not have "AXVisibleRows" and children is too much! 
     - 使用行遍历算法
 
+### iPhone Simulator
+
+- [ ] [FIXME_IS1] : [Apple] 旋转后 frame 错误
+
 ### Logseq
 
 - [x] [FIXME_LS1](x-source-tag://FIXME_LS1) : [[标签元素]] `#Swift` 

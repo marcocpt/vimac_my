@@ -9,10 +9,12 @@
 import Foundation
 
 enum AppCustomization : String {
+    case accessibilityInspector = "com.apple.AccessibilityInspector"
     case alfredPreferences = "com.runningwithcrayons.Alfred-Preferences"
     case clion = "com.jetbrains.CLion"
     case ida = "com.hexrays.ida64"
     case logseq = "com.electron.logseq"
+    case iphonesimulator = "com.apple.iphonesimulator"
     case pathFinder = "com.cocoatech.PathFinder"
     case pdfExpertMac = "com.readdle.PDFExpert-Mac"
     case typora = "abnerworks.Typora"

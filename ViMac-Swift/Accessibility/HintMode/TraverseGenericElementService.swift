@@ -42,10 +42,16 @@ class TraverseGenericElementService : TraverseElementService {
             traverseElement(child)
         }
     }
-    
+    /// - Tag: FIXME_AI1
     private func isElementVisible() -> Bool {
+        /// - Tag: FIXME_AI1
+        if element.frame.size == .zero {
+            os_log("⚠️ size zeo of element: %@", element.description)
+            return true
+        }
         if let clipBounds = clipBounds {
             if !clipBounds.intersects(element.frame) {
+                os_log("⚠️ not visible of element: %@", element.description)
                 return false
             }
         }

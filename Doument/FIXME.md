@@ -4,6 +4,11 @@
 
 - [ ] [FIXME_E1] : [[Tower]] Working Copy 中的文件列表表格
 
+### Accessibility Inspect
+
+- [x] [FIXME_AI1](x-source-tag://FIXME_AI1) : "iMac > All pocesses" size 为 0，坐标偏移
+    - size zero 改为 ⚠️
+
 ### CLion
 
 - [ ] [FIXME_CL1] : 在副显示器上 y 坐标便宜了。`Accessibility Inspector` 也是。系统 BUG?

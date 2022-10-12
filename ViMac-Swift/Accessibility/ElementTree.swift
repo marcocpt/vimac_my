@@ -76,6 +76,9 @@ class ElementTree {
             stack.append(contentsOf: customizationIgnored(element))
             
             if isHintable(element) {
+                if appCustomization == .accessibilityInspector {
+                    repairAccessibilityInspector(element)
+                }
                 results.append(element)
             }
             
@@ -96,8 +99,8 @@ class ElementTree {
     private func isHintable(_ element: Element) -> Bool {
         let frame = element.frame
         // [Xcode] `AXSplitter` width not zero, height is zero
-        if frame.size == .zero || frame.isNull {
-            os_log("[isHintable] frame is empty or null of element: %@", element.description)
+        if frame.isNull {
+            os_log("⚠️ [isHintable] frame is empty or null of element: %@", element.description)
             return false
         }
         /// - Tag: FIXME_CL2 [[CLion]] 中没 Actions
@@ -194,5 +197,15 @@ class ElementTree {
             }
         }
         return r
+    }
+    
+    private func repairAccessibilityInspector(_ element: Element) {
+        guard element.frame.size == .zero, 
+                element.role == "AXPopUpButton" else { return }
+        
+        let origin = element.frame.origin
+        let newOigin = CGPoint(x: origin.x, y: origin.y - 20)
+        let size = CGSize(width: 20, height: 20)
+        element.repair(frame: CGRect(origin: newOigin, size: size))
     }
 }

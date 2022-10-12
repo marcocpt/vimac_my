@@ -12,7 +12,7 @@ import AXSwift
 
 class Element {
     let rawElement: AXUIElement
-    let frame: NSRect
+    private(set) var frame: NSRect
     let actions: [String]
     let role: String
     
@@ -103,6 +103,11 @@ class Element {
     var parent: Element? {
         guard let raw = UIElement(rawElement).parent?.element else { return nil }
         return Element(rawElement: raw)
+    }
+    
+    func repair(frame: CGRect) {
+        self.frame = frame
+        setClippedFrame(frame)
     }
 }
 

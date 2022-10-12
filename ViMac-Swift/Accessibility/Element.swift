@@ -136,3 +136,15 @@ enum ELError: String,  Error {
     case frameNull = "frame is null or Empty"
     case roleNull = "role is null"
 }
+
+extension UIElement {
+    var appCustom: AppCustomization? {
+        guard let pid = try? pid(),
+              let bundleID = NSRunningApplication(processIdentifier: pid)?.bundleIdentifier
+        else {
+            os_log("❌ appCustomization nil!")
+            return nil 
+        }
+        return AppCustomization(rawValue: bundleID)
+    }
+}

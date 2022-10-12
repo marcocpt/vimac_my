@@ -22,7 +22,7 @@ class ElementTree {
         childrenById = [:]
     }
     
-    private var appCustomization: AppCustomization?
+    lazy private var appCustomization = app?.ui.appCustom
     
     func insert(_ element: Element, parentId: AXUIElement?) -> Bool {
         let isRoot = parentId == nil
@@ -71,10 +71,6 @@ class ElementTree {
         
         var results: [Element] = []
         var stack: [Element] = [rootElement]
-        
-        if let bundleID = NSWorkspace.shared.frontmostApplication?.bundleIdentifier {
-            appCustomization = AppCustomization(rawValue: bundleID)
-        }
         
         while let element = stack.popLast() {
             stack.append(contentsOf: customizationIgnored(element))

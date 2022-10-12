@@ -43,6 +43,7 @@
 
 - [x] [FIXME_XC1](x-source-tag://FIXME_XC1) : "Show the Variables View" and "Show the Console" 不能选中
     - 使用 Accessibility Inspector 查看为 ignored element，使用私有函数查找
+- [x] [FIXME_XC2](x-source-tag://FIXME_XC2) : "New File..." 中的 file
 
 ## HelpView
 

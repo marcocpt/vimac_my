@@ -138,9 +138,11 @@ class ElementTree {
     }
     
     /// - Tag: FIXME_TO1
+    /// - Tag: FIXME_XC2 
     private func isRowWithoutHintableChildren(_ element: Element) -> Bool {
         /// - Tag: FIXME_TO1
         element.role == "AXRow" // && hintableChildrenCount(element) == 0 
+        || (element.role == "AXGroup" && hintableChildrenCount(element) == 0 ) /// - Tag: FIXME_XC2 
     }
     
     private func hintableChildrenCount(_ element: Element) -> Int {

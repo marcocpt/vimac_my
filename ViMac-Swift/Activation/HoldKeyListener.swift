@@ -53,11 +53,11 @@ class HoldKeyListener {
         guard let characters = nsEvent.charactersIgnoringModifiers else { return event }
         
         if state == .nothing  {
-            if nsEvent.type == .keyDown && !nsEvent.isARepeat && characters == key && !modifiersPresent {
-                self.suppressedHintModeKeyDown = event
-                setAwaitingKey(characters)
-                return nil
-            }
+//            if nsEvent.type == .keyDown && !nsEvent.isARepeat && characters == key && !modifiersPresent {
+//                self.suppressedHintModeKeyDown = event
+//                setAwaitingKey(characters)
+//                return nil
+//            }
             return event
         }
 

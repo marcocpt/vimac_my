@@ -10,7 +10,7 @@ target 'Vimac' do
   pod 'RxSwift', '~> 5'
   pod 'RxCocoa', '~> 5'
   pod 'MASShortcut'
-  pod 'Sparkle'
+  pod 'Sparkle', '~> 2.9.1'
   pod 'Preferences'
   pod 'Analytics', '~> 4.1'
 

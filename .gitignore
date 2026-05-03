@@ -46,3 +46,7 @@ Backup[ ]of[ ]*.numbers/
 
 Pods/
 .vscode
+
+# Carthage
+Carthage/Build
+Carthage/Checkouts
